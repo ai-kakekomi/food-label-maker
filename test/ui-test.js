@@ -280,7 +280,7 @@ function ページを開く(BASE, page) {
   await wait(500);
 
   ok(/使い方マニュアル/.test(dm.title), 'タイトルが設定されている', dm.title);
-  ['what', 'start', 'steps', 'result', 'allergen', 'rules', 'custom', 'faq', 'disclaimer']
+  ['what', 'start', 'steps', 'result', 'allergen', 'rules', 'custom', 'improve', 'faq', 'disclaimer']
     .forEach(function (id) {
       ok(!!dm.getElementById(id), 'セクション #' + id +' がある');
     });
@@ -293,6 +293,33 @@ function ページを開く(BASE, page) {
   ok(/最終確認日/.test(body), '「最終確認日」の直し方の説明がある');
   ok(/sample\.yaml/.test(body), '社内ルールのテンプレートの場所が書いてある');
   ok(/乳成分を含む/.test(body), 'アレルゲン表記の注意（乳成分）がある');
+
+  /* 「改造は自由」セクション */
+  var improve = txt(dm.getElementById('improve'));
+  ok(/CC BY 4\.0/.test(improve), '改造セクションにライセンス（CC BY 4.0）の記載がある');
+  ok(/Claude Code/.test(improve), '改造セクションにAIコーディングエージェントの記載がある');
+  ok(/Download ZIP/.test(improve), '改造セクションにコードの入手方法の記載がある');
+  ok(/クレジット/.test(improve), '改造セクションにクレジット表記のお願いがある');
+  ok(/無料/.test(improve), '改造セクションに無料AI教室の案内がある');
+  var gh = dm.querySelector('#improve a[href*="github.com/ai-kakekomi/food-label-maker"]');
+  ok(!!gh, '改造セクションにGitHubリポジトリへのリンクがある');
+  ok(gh && gh.getAttribute('target') === '_blank' && /noopener/.test(gh.getAttribute('rel') || ''),
+    'GitHubリンクが別タブ＋rel=noopener で開く');
+
+  /* 章番号ともくじの並びが一致していること（章を足したときのずれ防止） */
+  var 見出し番号 = [].slice.call(dm.querySelectorAll('main > section.card > h2'))
+    .map(function (h) { return parseInt(txt(h), 10); });
+  var 連番 = 見出し番号.every(function (n, i) { return n === i + 1; });
+  ok(連番, 'セクションの章番号が1から連番になっている', 見出し番号.join(','));
+  ok(dm.querySelectorAll('.toc a[href^="#"]').length === 見出し番号.length,
+    'もくじの項目数とセクション数が一致する',
+    dm.querySelectorAll('.toc a[href^="#"]').length + ' vs ' + 見出し番号.length);
+  var toc順 = [].slice.call(dm.querySelectorAll('.toc a[href^="#"]'))
+    .map(function (a) { return a.getAttribute('href').slice(1); });
+  var 本文順 = [].slice.call(dm.querySelectorAll('main > section.card[id]'))
+    .map(function (s) { return s.id; });
+  ok(JSON.stringify(toc順) === JSON.stringify(本文順), 'もくじの並び順が本文と一致する',
+    toc順.join(',') + ' / ' + 本文順.join(','));
 
   /* もくじのリンク先がすべてページ内に存在すること */
   var 欠落 = [].slice.call(dm.querySelectorAll('.toc a[href^="#"]'))

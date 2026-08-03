@@ -44,6 +44,7 @@
       <li><a href="#allergen">アレルゲンの入力のしかた（いちばん大事なところ）</a></li>
       <li><a href="#rules">ルールの直し方（プログラムの知識は不要です）</a></li>
       <li><a href="#custom">社内ルールを追加する</a></li>
+      <li><a href="#improve">もっとこうしたい、と思ったら（改造は自由です）</a></li>
       <li><a href="#faq">困ったときは</a></li>
       <li><a href="#disclaimer">免責事項</a></li>
     </ol>
@@ -472,8 +473,131 @@
   </section>
 
   <!-- ============ 8 ============ -->
+  <section class="card" id="improve">
+    <h2>8. もっとこうしたい、と思ったら</h2>
+
+    <p class="callout">
+      <strong>このツールは、コピーも、改造も、配り直すのも自由です。</strong>
+      そして今は、プログラミングの経験がなくても、<strong>AIに日本語で頼んで自分で直せる時代</strong>になりました。
+      「もっとこうしたい」と思ったら、開発者に頼むだけでなく、<strong>自分で直すという選択肢</strong>があります。
+    </p>
+
+    <h3>2つの「直す」があります</h3>
+    <p>前の章までで説明した内容と合わせると、直しかたは段階的に2つあります。</p>
+    <table class="manual-table">
+      <thead><tr><th>段階</th><th>何ができるか</th><th>必要なもの</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>第一歩</strong><br>ルール・社内ルールを直す</td>
+          <td>
+            チェックの内容や文言を変える、社内ルールを足す<br>
+            （<a href="#rules">6章</a>・<a href="#custom">7章</a>で説明しました）
+          </td>
+          <td>メモ帳などのエディタだけ</td>
+        </tr>
+        <tr>
+          <td><strong>次の一歩</strong><br>ツール本体を改造する</td>
+          <td>
+            画面の見た目や入力項目を変える、機能を足す、<br>
+            自社専用のツールに作り変える
+          </td>
+          <td>AIコーディングエージェント<br>（下で説明します）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="help">
+      いきなり本体をいじらなくて大丈夫です。まずはルールのYAMLを1行直してみるところからで十分です。
+    </p>
+
+    <h3>ソースコードはここにあります</h3>
+    <p>
+      このツールはオープンソースで、<strong>CC BY 4.0</strong> というライセンスで公開しています。
+      商用利用を含めて自由に使え、改造したものを公開・販売することもできます。
+      お願いしているのは<strong>クレジット（非営利団体 AIかけこみ寺）を書き添えること</strong>だけです。
+    </p>
+    <p>
+      <a href="https://github.com/ai-kakekomi/food-label-maker" target="_blank" rel="noopener"
+         class="btn btn-primary inline-btn">GitHubでソースコードを見る</a>
+    </p>
+
+    <h3>AIに手伝ってもらって、自分で直す</h3>
+    <p>
+      <strong>Claude Code</strong> や <strong>Codex</strong> のような
+      「AIコーディングエージェント」と呼ばれる道具があります。
+      フォルダを渡して<strong>日本語で「ここをこう変えて」と頼むだけ</strong>で、
+      AIがコードを読んで、直して、動かして確かめるところまでやってくれます。
+      実は、このツール自体もそうやって作られました。
+    </p>
+
+    <ol class="steps steps-compact">
+      <li>
+        <h3>コードを手に入れる</h3>
+        <p>
+          上のGitHubのページを開いて、緑色の「Code」ボタン →「Download ZIP」を選び、
+          ダウンロードしたZIPを展開します。<strong>これだけで大丈夫です。</strong>
+        </p>
+        <p class="help">
+          Gitという道具の使い方を知っている方は <code>git clone</code> でも構いません。
+          知らなくても、まったく問題ありません。
+        </p>
+      </li>
+      <li>
+        <h3>AIコーディングエージェントを用意する</h3>
+        <p>
+          Claude Code などを入れて、<strong>さきほど展開したフォルダを開いた状態で起動</strong>します。
+          導入の手順は道具によって違うので、公式の案内に沿って進めてください。
+        </p>
+      </li>
+      <li>
+        <h3>日本語で頼む</h3>
+        <p>専門用語は要りません。<strong>やりたいことをそのまま書けば通じます。</strong></p>
+        <div class="howto">
+          <h4>頼みかたの例</h4>
+          <ul>
+            <li>「原材料の入力欄に、1行ずつ貼り付けてまとめて登録できるボタンを付けて」</li>
+            <li>「ラベル案の文字をもっと大きくして、印刷したときに読みやすくして」</li>
+            <li>「うちは冷凍食品を作っているので、冷凍食品向けのチェック項目を追加して」</li>
+            <li>「検証結果をExcelに貼れる形で書き出せるようにして」</li>
+            <li>「会社のロゴと色に合わせて、画面の見た目を変えて」</li>
+          </ul>
+          <p class="help">
+            うまくいかないときは、<strong>何がどう困っているかをそのまま伝える</strong>のがコツです。
+            「ボタンを押しても何も起きない」「エラーでこう出た」と伝えれば、AIが直してくれます。
+          </p>
+        </div>
+      </li>
+      <li>
+        <h3>手元で動かして確かめる</h3>
+        <p>
+          直したら、<a href="#faq">この下のQ&amp;A</a>や同梱の <code>README.md</code> の手順で
+          自分のパソコンで開いて、思ったとおりになっているか確かめます。
+          <strong>おかしくなっても、ZIPをもう一度展開すれば元に戻せます。</strong>気軽に試してください。
+        </p>
+      </li>
+    </ol>
+
+    <p class="callout">
+      <strong>改造したものを公開・共有していただくのも大歓迎です。</strong>
+      クレジット（非営利団体 AIかけこみ寺）を書き添えるだけで、あとは自由に使ってください。
+      「こんな風に直した」を教えていただけたら、とても嬉しいです。
+      本家に取り込めそうな改善は、GitHubのIssueやPull Requestでお待ちしています。
+    </p>
+
+    <p>
+      やってみて、うまくいかなかったら気軽にご相談ください
+      （<a href="mailto:info@ai-kakekomi.com">info@ai-kakekomi.com</a>）。
+      わたしたちAIかけこみ寺は、<strong>AIの使い方を学べる無料のAI教室</strong>を各地で開いています
+      （<a href="https://ai-kakekomi.com" target="_blank" rel="noopener">ai-kakekomi.com</a>）。
+      よろしければのぞいてみてください。
+    </p>
+    <p class="help">
+      AIの恩恵をすべての人へ。このツールが、その入り口のひとつになればと思って公開しています。
+    </p>
+  </section>
+
+  <!-- ============ 9 ============ -->
   <section class="card" id="faq">
-    <h2>8. 困ったときは</h2>
+    <h2>9. 困ったときは</h2>
     <dl class="def">
       <dt>画面に「ルールファイルを読み込めませんでした」と出る</dt>
       <dd>
@@ -513,9 +637,9 @@
     </dl>
   </section>
 
-  <!-- ============ 9 ============ -->
+  <!-- ============ 10 ============ -->
   <section class="card" id="disclaimer">
-    <h2>9. 免責事項</h2>
+    <h2>10. 免責事項</h2>
     <p class="callout callout-warn">
       <strong>本ツールは参考情報です。表示内容の最終確認は必ず食品表示基準および
       消費者庁の最新ガイドラインで行ってください。</strong>

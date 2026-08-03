@@ -294,4 +294,12 @@ node test/ui-test.js
 非営利団体 **AIかけこみ寺** — AIの恩恵をすべての人へ。
 
 - Web: <https://ai-kakekomi.com>
+- GitHub: <https://github.com/ai-kakekomi/food-label-maker>
 - Mail: info@ai-kakekomi.com
+
+### 改造は自由です
+
+このツールは、コピーも改造も再配布も自由です（CC BY 4.0、クレジット表記のみお願いします）。
+「もっとこうしたい」と思ったら、Claude Code などのAIコーディングエージェントに日本語で頼めば、
+プログラミングの経験がなくても直せます。手順は [`manual.html` の8章](manual.html#improve) で
+説明しています。改造版の公開・共有も歓迎です。
