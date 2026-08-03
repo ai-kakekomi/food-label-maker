@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ルール一覧（監査モード）｜食品表示ラベルメーカー</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/print.css" media="print">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div>
+      <h1>ルール一覧（監査モード）</h1>
+      <p class="tagline">このツールが使っているルールを、根拠と出典つきですべて表示します</p>
+    </div>
+    <nav class="site-nav">
+      <a href="index.html">ラベル作成にもどる</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap notice-bar">
+  <p>
+    ルールは <code>rules/base/</code> のYAMLファイルに日本語で書かれています。
+    <strong>プログラムを書き換えなくても、YAMLファイルを直せばルールを直せます。</strong>
+    法令の一次情報と突き合わせて確認し、確認できたルールには「最終確認日」を記入してください。
+    書き方は <a href="README.md">README</a> の「ルールの直し方」を参照してください。
+  </p>
+</div>
+
+<main class="wrap">
+  <div class="card">
+    <div class="rules-toolbar">
+      <label class="field inline">
+        <span class="field-label">絞り込み</span>
+        <input type="search" id="q" placeholder="キーワード（例：アレルゲン、期限）">
+      </label>
+      <label class="field inline">
+        <span class="field-label">分類</span>
+        <select id="cat"><option value="">すべて</option></select>
+      </label>
+      <label class="field inline">
+        <span class="field-label">重大度</span>
+        <select id="sev">
+          <option value="">すべて</option>
+          <option value="error">error（法令違反のおそれ）</option>
+          <option value="warn">warn（推奨・慣行）</option>
+        </select>
+      </label>
+      <label class="field inline">
+        <span class="field-label">判定方法</span>
+        <select id="mode">
+          <option value="">すべて</option>
+          <option value="auto">機械が判定する</option>
+          <option value="manual">人が確認する（チェックリスト）</option>
+        </select>
+      </label>
+    </div>
+    <div id="stats" class="summary"></div>
+  </div>
+
+  <div id="rules-list"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="disclaimer">
+      本ツールは参考情報です。表示内容の最終確認は必ず食品表示基準および消費者庁の最新ガイドラインで行ってください。
+    </p>
+    <p class="footer-meta">
+      食品表示ラベルメーカー ／ 非営利団体 AIかけこみ寺 ／ ライセンス CC BY 4.0 ／ 無保証
+    </p>
+  </div>
+</footer>
+
+<script src="vendor/js-yaml.min.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/rules-page.js"></script>
+</body>
+</html>
