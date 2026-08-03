@@ -69,7 +69,10 @@ npx --yes http-server -p 8000
 | 画面 | 内容 |
 |---|---|
 | `index.html` | 入力フォーム・検証結果・ラベル案 |
+| `manual.html` | **使い方マニュアル**。はじめての方向けの操作手順、アレルゲン入力の考え方、ルールの直し方を画面上で読めます。各ページのナビから1クリックで開けます |
 | `rules.html` | **監査モード**。このツールが使っている全ルールを、根拠条文・出典URL・最終確認日つきで一覧表示します。専門家のレビュー用です |
+
+**操作方法がわからないときは、まず [`manual.html`](manual.html) を開いてください。**このREADMEより平易に、画面つきで説明しています。
 
 ### 検証結果の4段階
 
@@ -230,6 +233,7 @@ YAMLファイルは**ただのテキストファイル**です。メモ帳やVS 
 ```
 food-label-maker/
   index.html          入力フォーム・検証結果・ラベル案
+  manual.html         使い方マニュアル（非エンジニア向け）
   rules.html          ルール一覧（監査モード）
   css/
     style.css         画面用スタイル
@@ -245,7 +249,8 @@ food-label-maker/
   vendor/
     js-yaml.min.js    YAML読み込みライブラリ（MITライセンス／同梱）
   test/
-    test.js           ルールYAMLと判定エンジンの自動テスト
+    test.js           ルールYAMLと判定エンジンの自動テスト（依存なし）
+    ui-test.js        画面の回帰テスト（jsdom を使用。任意）
   README.md
   LICENSE
 ```
@@ -254,11 +259,21 @@ food-label-maker/
 
 ### テストの実行
 
-Node.js がある環境で、YAMLの文法とエンジンの動作を確認できます。
+Node.js がある環境で、YAMLの文法とエンジンの動作を確認できます。**外部パッケージは不要です。**
 
 ```powershell
 node test/test.js
 ```
+
+画面まわりの回帰テストもあります。こちらは `jsdom` が必要で、入っていない場合は自動でスキップされます
+（テスト用の静的サーバーはスクリプトの中で立てるので、別途 python 等は不要です）。
+
+```powershell
+npm install jsdom
+node test/ui-test.js
+```
+
+`jsdom` はテスト専用です。**ツール本体は依存パッケージなしで動きます。**
 
 ---
 
