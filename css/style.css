@@ -424,6 +424,20 @@ input:focus, select:focus, textarea:focus {
   padding: .8rem 1.1rem; margin: .8rem 0; background: #fafbfc;
 }
 .caution-list > li { margin-bottom: .6rem; }
+
+/* 補足（折りたたみ）。読まなくても先に進める内容をたたんでおく */
+.supplement {
+  border: 1px solid var(--line); border-radius: 8px;
+  background: #f7f9fa; margin: 1rem 0;
+}
+.supplement > summary {
+  cursor: pointer; padding: .7rem 1rem;
+  font-weight: 700; font-size: .97rem; color: var(--fg-muted);
+}
+.supplement > summary:hover { background: #eef2f5; }
+.supplement[open] > summary { border-bottom: 1px solid var(--line); }
+.supplement-body { padding: .8rem 1.1rem 1rem; }
+.supplement-body > :first-child { margin-top: 0; }
 kbd {
   background: #fff; border: 1px solid #a9b4bd; border-bottom-width: 2px;
   border-radius: 4px; padding: .05rem .4rem; font-size: .9em;
