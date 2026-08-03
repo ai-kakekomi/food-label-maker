@@ -85,8 +85,19 @@ legend {
   font-weight: 800; font-size: 1.15rem; color: var(--accent-dark);
   padding: 0 .5rem;
 }
-.sticky { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: auto; }
-@media (max-width: 1000px) { .sticky { position: static; max-height: none; } }
+/* 検証結果は件数が多いと縦に長くなる。
+   カード自体を position:sticky にすると画面いっぱいに居座り、
+   下にあるラベル案カード（コピー・印刷ボタンを含む）が
+   画面から見えなくなってしまうため、カードは通常の流れに置く。
+   代わりに、カードの見出し（＝検証ボタンのある行）だけを
+   カードの中で追従させる。 */
+.card-scroll-head {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--card);
+  margin: -1.25rem -1.35rem .75rem;
+  padding: 1.25rem 1.35rem .6rem;
+  border-bottom: 1px solid var(--line);
+}
 
 /* ---------- フォーム部品 ---------- */
 
@@ -193,6 +204,8 @@ input:focus, select:focus, textarea:focus {
 .result-head h2 { margin: 0; font-size: 1.25rem; }
 
 .summary { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+.card-scroll-head .summary { margin-bottom: 0; }
+.card-scroll-head .summary:empty { display: none; }
 .pill {
   display: inline-block; padding: .25rem .8rem; border-radius: 999px;
   font-size: .92rem; font-weight: 700; border: 1px solid var(--line); background: #fff;
@@ -298,6 +311,101 @@ input:focus, select:focus, textarea:focus {
 .rule-dl dt { font-weight: 700; color: var(--fg-muted); }
 .rule-dl dd { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 620px) { .rule-dl { grid-template-columns: 1fr; } .rule-dl dd { margin-bottom: .4rem; } }
+
+/* ---------- 使い方マニュアル ---------- */
+
+.manual { margin-top: 1.25rem; }
+.manual .card { padding: 1.5rem 1.6rem; }
+.manual h2 {
+  margin: 0 0 1rem; font-size: 1.35rem; color: var(--accent-dark);
+  padding-bottom: .4rem; border-bottom: 2px solid var(--line);
+}
+.manual h3 { font-size: 1.1rem; margin: 1.5rem 0 .5rem; color: var(--accent-dark); }
+.manual h4 { font-size: 1rem; margin: 0 0 .4rem; }
+.manual p, .manual li { font-size: 1.02rem; }
+.manual ul, .manual ol { padding-left: 1.5rem; }
+.manual li { margin-bottom: .35rem; }
+.manual a { color: var(--accent); }
+.inline-btn { display: inline-block; text-decoration: none; }
+
+/* もくじ */
+.toc h2 { border: none; margin-bottom: .5rem; }
+.toc ol { margin: 0; }
+.toc li { margin-bottom: .3rem; font-weight: 700; }
+
+/* できること／できないこと */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+@media (max-width: 780px) { .two-col { grid-template-columns: 1fr; } }
+.panel { border: 1px solid var(--line); border-radius: 8px; padding: .9rem 1.1rem; }
+.panel h3 { margin-top: 0; }
+.panel ul { margin-bottom: 0; }
+.panel-ok { background: var(--pass-bg); border-color: #a9d3b8; }
+.panel-ok h3 { color: var(--pass); }
+.panel-ng { background: #f2f4f6; }
+.panel-ng h3 { color: var(--fg-muted); }
+
+/* 目立たせたい注記 */
+.callout {
+  border: 1px solid #b9d8e2; background: #e6f2f6;
+  border-left: 6px solid var(--accent);
+  border-radius: 8px; padding: .8rem 1.1rem; margin: 1rem 0;
+}
+.callout-warn { background: var(--warn-bg); border-color: #e3c793; border-left-color: var(--warn); }
+
+/* 手順 */
+.steps { list-style: none; padding-left: 0; counter-reset: step; }
+.steps > li {
+  position: relative; padding-left: 3.2rem; margin-bottom: 1.6rem;
+  counter-increment: step;
+}
+.steps > li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: .1rem;
+  width: 2.3rem; height: 2.3rem; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.1rem;
+}
+.steps > li > h3 { margin: .15rem 0 .5rem; font-size: 1.15rem; }
+.steps-compact > li { margin-bottom: 1rem; }
+.steps-compact > li > h3 { font-size: 1.05rem; }
+
+/* 用語の説明リスト */
+.def { margin: .8rem 0; }
+.def dt {
+  font-weight: 700; margin-top: .9rem; padding-left: .6rem;
+  border-left: 4px solid var(--accent);
+}
+.def dd { margin: .25rem 0 0 .6rem; }
+
+/* 表 */
+.manual-table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .98rem; }
+.manual-table th, .manual-table td {
+  border: 1px solid var(--line); padding: .55rem .7rem;
+  text-align: left; vertical-align: top;
+}
+.manual-table thead th { background: #eef2f5; }
+.manual-table td .pill { white-space: nowrap; }
+
+/* コード・フォルダ構成 */
+.manual pre.code, .manual pre.tree {
+  background: #21262b; color: #e8edf1;
+  padding: .9rem 1.1rem; border-radius: 8px;
+  overflow-x: auto; font-family: Consolas, "Courier New", monospace;
+  font-size: .93rem; line-height: 1.7; margin: .6rem 0;
+}
+.manual pre.tree { background: #eef1f4; color: var(--fg); }
+.manual pre .c { color: #8fb3c7; }
+.howto {
+  border: 1px dashed #b9c3cb; border-radius: 8px;
+  padding: .8rem 1.1rem; margin: .8rem 0; background: #fafbfc;
+}
+.caution-list > li { margin-bottom: .6rem; }
+kbd {
+  background: #fff; border: 1px solid #a9b4bd; border-bottom-width: 2px;
+  border-radius: 4px; padding: .05rem .4rem; font-size: .9em;
+  font-family: inherit;
+}
 
 /* ---------- フッター（免責文は常時表示・非表示にできない） ---------- */
 

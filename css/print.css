@@ -27,6 +27,7 @@ body {
 .toast,
 #results,
 #summary,
+.card-scroll-head,
 .rules-toolbar {
   display: none !important;
 }
@@ -40,7 +41,10 @@ body {
   margin: 0 0 8mm !important;
   break-inside: avoid;
 }
-.sticky { position: static !important; max-height: none !important; overflow: visible !important; }
+/* 画面で追従させている要素は、印刷では通常の流れに戻す
+   （position:sticky のまま印刷すると内容が欠けることがある） */
+.card-scroll-head { position: static !important; }
+.col-result { overflow: visible !important; max-height: none !important; }
 
 .result-head h2 { font-size: 12pt; margin: 0 0 3mm; }
 

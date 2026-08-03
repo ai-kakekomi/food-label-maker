@@ -17,6 +17,7 @@
       <p class="tagline">加工食品（一般用）の一括表示を、入力してチェックして、ラベル案にする</p>
     </div>
     <nav class="site-nav">
+      <a href="manual.html">使い方マニュアル</a>
       <a href="rules.html">ルール一覧（監査モード）</a>
     </nav>
   </div>
@@ -236,15 +237,6 @@
   <!-- ============ 右：検証結果とラベル ============ -->
   <section class="col-result" aria-label="検証結果とラベル案">
 
-    <div class="card sticky">
-      <div class="result-head">
-        <h2>検証結果</h2>
-        <button type="button" class="btn btn-primary" id="btn-validate">この内容を検証する</button>
-      </div>
-      <div id="summary" class="summary"></div>
-      <div id="results"></div>
-    </div>
-
     <div class="card">
       <div class="result-head">
         <h2>ラベル案（一括表示枠）</h2>
@@ -258,6 +250,17 @@
       </p>
       <div id="label-preview" class="label-preview"></div>
       <p class="label-meta" id="label-meta"></p>
+    </div>
+
+    <div class="card">
+      <div class="card-scroll-head">
+        <div class="result-head">
+          <h2>検証結果</h2>
+          <button type="button" class="btn btn-primary" id="btn-validate">この内容を検証する</button>
+        </div>
+        <div id="summary" class="summary"></div>
+      </div>
+      <div id="results"></div>
     </div>
 
   </section>
