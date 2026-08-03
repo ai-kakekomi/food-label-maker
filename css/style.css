@@ -325,7 +325,7 @@ input:focus, select:focus, textarea:focus {
 .manual p, .manual li { font-size: 1.02rem; }
 .manual ul, .manual ol { padding-left: 1.5rem; }
 .manual li { margin-bottom: .35rem; }
-.manual a { color: var(--accent); }
+.manual a:not(.btn) { color: var(--accent); }
 .inline-btn { display: inline-block; text-decoration: none; }
 
 /* もくじ */
