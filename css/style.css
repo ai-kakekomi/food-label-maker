@@ -215,6 +215,29 @@ input:focus, select:focus, textarea:focus {
 .pill-check { background: var(--check-bg); border-color: #b3caea; color: var(--check); }
 .pill-pass  { background: var(--pass-bg);  border-color: #a9d3b8; color: var(--pass); }
 
+/* 機械判定の指摘が0件だったときの成功バナー */
+.goodbox {
+  background: var(--pass-bg);
+  border: 1px solid #a9d3b8;
+  border-left: 6px solid var(--pass);
+  border-radius: 8px;
+  padding: .9rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.goodbox p { margin: 0; }
+.goodbox-title { font-size: 1.08rem; font-weight: 800; color: var(--pass); }
+.goodbox-sub { margin-top: .35rem !important; }
+.goodbox-count {
+  margin-top: .5rem !important;
+  font-weight: 700;
+  color: var(--check);
+}
+.goodbox-note {
+  margin-top: .5rem !important;
+  font-size: .88rem;
+  color: var(--fg-muted);
+}
+
 .res-head { font-size: 1.02rem; margin: 1.1rem 0 .5rem; padding-left: .55rem; border-left: 5px solid var(--line); }
 .res-head.res-error { border-color: var(--error); color: var(--error); }
 .res-head.res-warn  { border-color: var(--warn);  color: var(--warn); }

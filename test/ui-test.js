@@ -188,6 +188,86 @@ function ページを開く(BASE, page) {
   ok(/\.col-form[\s,]/.test(printCss), '印刷用CSSで入力フォームは非表示にしている');
 
   ok(p.エラー.length === 0, 'JavaScriptのエラーが発生していない', p.エラー.join(' / '));
+
+  /* ============================================================
+   * 1-2. 機械判定の指摘が0件のときの成功バナー
+   *      error・warn がともに0件のときだけ出す。
+   *      「error 0件だが warn あり」では出さない。
+   * ============================================================ */
+  見出し('1-2. 機械判定0件の成功バナー');
+
+  function バナー() { return d.getElementById('goodbox'); }
+  function 件数(種別) {
+    var m = txt(d.getElementById('summary')).match(new RegExp(種別 + ' (\\d+)'));
+    return m ? Number(m[1]) : -1;
+  }
+
+  /* --- サンプル2（くるみパン）：要修正あり → 出ない --- */
+  d.querySelector('[data-sample="くるみパン"]').click();
+  await wait(400);
+  ok(件数('要修正') > 0, 'サンプル2は要修正が1件以上ある', '要修正=' + 件数('要修正'));
+  ok(!バナー(), 'サンプル2（要修正あり）では成功バナーが表示されない');
+
+  /* --- サンプル1（クッキー）：要修正0・要確認0 → 出る --- */
+  d.querySelector('[data-sample="クッキー"]').click();
+  await wait(400);
+  ok(件数('要修正') === 0 && 件数('要確認') === 0,
+    'サンプル1は要修正0件・要確認0件', '要修正=' + 件数('要修正') + ' 要確認=' + 件数('要確認'));
+  var g = バナー();
+  ok(!!g, 'サンプル1（機械判定0件）で成功バナーが表示される');
+  ok(/機械判定で検出された問題はありませんでした/.test(txt(g)), '成功バナーに成功の文言がある');
+  ok(/機械では判定できない項目が残っています/.test(txt(g)), '成功バナーに人の確認を促す補足がある');
+
+  /* 未確認のチェックリスト件数がバナーに出ていること */
+  var check件数 = 件数('人の確認が必要');
+  ok(check件数 > 0, 'サンプル1に未確認のチェックリスト項目がある', 'check=' + check件数);
+  ok(new RegExp('人の確認が必要な項目：' + check件数 + '件').test(txt(g)),
+    '成功バナーに未確認のチェックリスト件数が表示される',
+    'summary=' + check件数 + ' / banner=' + txt(g));
+
+  /* 緑系（成功）の見た目であること */
+  var gs = w.getComputedStyle(g);
+  ok(/rgb|#/.test(gs.backgroundColor || ''), '成功バナーに背景色が付いている', gs.backgroundColor);
+
+  /* --- チェックを1つ入れると件数が減って追随すること --- */
+  var cb1 = d.querySelector('#results input[data-confirm]');
+  if (cb1) {
+    cb1.click();
+    await wait(250);
+    var 減後 = 件数('人の確認が必要');
+    ok(減後 === check件数 - 1, 'チェックすると未確認件数が1件減る', check件数 + ' -> ' + 減後);
+    ok(バナー() && new RegExp('人の確認が必要な項目：' + 減後 + '件').test(txt(バナー())),
+      '成功バナーの件数がチェックに追随する');
+  }
+
+  /* --- warn を発生させると成功バナーが消えること（error 0・warn ありの区別） --- */
+  var noteEl = d.getElementById('f-note');
+  noteEl.value = '落花生が入っているかもしれません';   // 可能性表示 → warn ではなく error
+  noteEl.dispatchEvent(new w.Event('input'));
+  d.getElementById('btn-validate').click();
+  await wait(400);
+  ok(!バナー(), '指摘が発生すると成功バナーが消える',
+    '要修正=' + 件数('要修正') + ' 要確認=' + 件数('要確認'));
+
+  /* error を出さずに warn だけを足して、error 0・warn ありの状態を作る。
+     （既存の原材料は書き換えない。書き換えるとアレルゲンの表示が消えて error になる）
+     原材料を1行追加し、大分類表示「穀類」を入れると warn だけが増える。 */
+  d.querySelector('[data-sample="クッキー"]').click();
+  await wait(400);
+  ok(!!バナー(), 'サンプル1に戻すと成功バナーが再表示される');
+  d.querySelector('[data-add="ingredient"]').click();
+  await wait(200);
+  var 行群 = d.querySelectorAll('#ingredient-rows .row-input');
+  var 最終行 = 行群[行群.length - 1];
+  最終行.value = '穀類';                                // 大分類表示 → warn
+  最終行.dispatchEvent(new w.Event('input'));
+  d.getElementById('btn-validate').click();
+  await wait(400);
+  ok(件数('要修正') === 0 && 件数('要確認') > 0,
+    '要修正0件・要確認ありの状態を作れた', '要修正=' + 件数('要修正') + ' 要確認=' + 件数('要確認'));
+  ok(!バナー(), '要修正0件でも要確認があれば成功バナーは出さない');
+
+  ok(p.エラー.length === 0, '成功バナーの操作でJavaScriptのエラーが発生していない', p.エラー.join(' / '));
   w.close();
 
   /* ============================================================

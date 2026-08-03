@@ -367,7 +367,24 @@
     var 並び = { error: 0, warn: 1, check: 2, pass: 3 };
     var sorted = results.slice().sort(function (a, b) { return 並び[a.結果] - 並び[b.結果]; });
 
+    /* 機械判定の指摘（要修正・要確認）が1件もないときだけ、成功バナーを出す。
+       「要修正0件だが要確認あり」のときは出さない。 */
     var html = '';
+    if (results.length && 件数.error === 0 && 件数.warn === 0) {
+      html += '<div class="goodbox" id="goodbox" role="status">';
+      html += '<p class="goodbox-title">✓ 機械判定で検出された問題はありませんでした</p>';
+      if (件数.check > 0) {
+        html += '<p class="goodbox-sub">ただし、機械では判定できない項目が残っています。' +
+          '下のチェックリストの確認をお願いします。</p>';
+        html += '<p class="goodbox-count">人の確認が必要な項目：<strong>' + 件数.check + '件</strong></p>';
+      } else {
+        html += '<p class="goodbox-sub">チェックリストの項目もすべて確認済みです。</p>';
+      }
+      html += '<p class="goodbox-note">この表示は、このツールに入っているルールの範囲で' +
+        '問題が見つからなかったという意味です。版下にする前に、必ず表示の責任者が最終確認してください。</p>';
+      html += '</div>';
+    }
+
     var 現在 = null;
     var 見出し = {
       error: '要修正（法令違反のおそれがあります）',
