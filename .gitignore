@@ -1,0 +1,23 @@
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node（このプロジェクトはnpm依存なしですが、テスト実行時などに備えて）
+node_modules/
+npm-debug.log*
+
+# 作業用
+_scratch/
+*.local.*
+
+# 社内ルールの実データ（サンプル以外は各社の機密情報になり得るためコミットしない）
+rules/custom/*.yaml
+!rules/custom/sample.yaml
