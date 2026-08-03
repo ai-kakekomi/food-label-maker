@@ -1,0 +1,325 @@
+/* ============================================================
+ * 食品表示ラベルメーカー スタイル
+ * シニアを含む非エンジニアが使う前提。文字は大きめ、余白は広め。
+ * ============================================================ */
+
+:root {
+  --fg: #1d2429;
+  --fg-muted: #5a666f;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --line: #d3dae0;
+  --accent: #16617a;
+  --accent-dark: #0f4457;
+  --error: #b3261e;
+  --error-bg: #fdecea;
+  --warn: #8a5a00;
+  --warn-bg: #fff5e0;
+  --check: #245a9c;
+  --check-bg: #e9f1fb;
+  --pass: #1e6b3a;
+  --pass-bg: #e9f5ec;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 17px; }
+
+body {
+  margin: 0;
+  padding: 0 0 5.5rem;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.75;
+}
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ---------- ヘッダー ---------- */
+
+.site-header {
+  background: var(--accent);
+  color: #fff;
+  padding: 1.1rem 0;
+}
+.header-inner {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  align-items: center; justify-content: space-between;
+}
+.site-header h1 { margin: 0; font-size: 1.6rem; letter-spacing: .02em; }
+.tagline { margin: .2rem 0 0; font-size: .95rem; opacity: .9; }
+.site-nav a {
+  color: #fff; background: rgba(255,255,255,.16);
+  padding: .55rem 1.1rem; border-radius: 999px;
+  text-decoration: none; font-weight: 700; font-size: .98rem;
+  border: 1px solid rgba(255,255,255,.4);
+}
+.site-nav a:hover { background: rgba(255,255,255,.3); }
+
+.notice-bar { margin-top: 1rem; }
+.notice-bar p {
+  margin: 0; background: #e6f2f6; border: 1px solid #b9d8e2;
+  border-left: 6px solid var(--accent);
+  padding: .85rem 1.1rem; border-radius: var(--radius); font-size: .97rem;
+}
+
+/* ---------- レイアウト ---------- */
+
+.layout {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: 1.5rem; align-items: start; margin-top: 1.25rem;
+}
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.25rem 1.35rem;
+  margin: 0 0 1.25rem;
+}
+fieldset.card { border: 1px solid var(--line); }
+legend {
+  font-weight: 800; font-size: 1.15rem; color: var(--accent-dark);
+  padding: 0 .5rem;
+}
+.sticky { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: auto; }
+@media (max-width: 1000px) { .sticky { position: static; max-height: none; } }
+
+/* ---------- フォーム部品 ---------- */
+
+.field { display: block; margin: 0 0 1rem; }
+.field.inline { display: inline-block; margin: 0 1rem .5rem 0; }
+.field-label { display: block; font-weight: 700; margin-bottom: .3rem; }
+.req {
+  font-style: normal; font-size: .78rem; font-weight: 700;
+  color: #fff; background: var(--error); padding: .1rem .45rem;
+  border-radius: 4px; margin-left: .4rem; vertical-align: middle;
+}
+input[type="text"], input[type="number"], input[type="search"], select, textarea {
+  width: 100%; padding: .6rem .7rem; font-size: 1.02rem;
+  font-family: inherit; color: var(--fg);
+  border: 1px solid #a9b4bd; border-radius: 7px; background: #fff;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 3px solid #9ecbdc; outline-offset: 1px; border-color: var(--accent);
+}
+.help { display: block; font-size: .9rem; color: var(--fg-muted); margin-top: .35rem; }
+.help code, code {
+  background: #eef1f4; padding: .05rem .35rem; border-radius: 4px;
+  font-family: Consolas, "Courier New", monospace; font-size: .92em;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+@media (max-width: 620px) { .grid-2 { grid-template-columns: 1fr; } }
+.mt { margin-top: 1rem; }
+.muted { color: var(--fg-muted); }
+
+.checkbox, .radio { display: block; margin: 0 0 .6rem; font-size: 1rem; cursor: pointer; }
+.checkbox input, .radio input { margin-right: .45rem; transform: scale(1.2); }
+.radio-row .radio { padding: .45rem .6rem; border: 1px solid var(--line); border-radius: 7px; background: #fafbfc; }
+
+/* ---------- ボタン ---------- */
+
+.btn {
+  font-family: inherit; font-size: 1rem; font-weight: 700;
+  padding: .6rem 1.1rem; border-radius: 8px; cursor: pointer;
+  border: 1px solid #9aa7b1; background: #fff; color: var(--fg);
+}
+.btn:hover { background: #eef2f5; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-demo { background: #fff5e0; border-color: #d8b878; }
+.btn-ghost { background: transparent; border-style: dashed; color: var(--fg-muted); }
+.btn-add { width: 100%; border-style: dashed; margin-top: .4rem; }
+.btn-group { display: flex; gap: .5rem; flex-wrap: wrap; }
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: .8rem 1rem; margin-bottom: 1.25rem;
+}
+.toolbar-label { font-weight: 700; }
+
+.btn-mini {
+  font-family: inherit; font-size: 1rem; line-height: 1;
+  width: 2.1rem; height: 2.1rem; border-radius: 6px; cursor: pointer;
+  border: 1px solid #a9b4bd; background: #fff; color: var(--fg-muted);
+}
+.btn-mini:hover { background: #eef2f5; color: var(--fg); }
+
+/* ---------- 原材料・添加物の行 ---------- */
+
+.rows { display: flex; flex-direction: column; gap: .7rem; }
+.row {
+  display: grid; grid-template-columns: 2rem 1fr auto; gap: .5rem;
+  align-items: start;
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: .6rem; background: #fafbfc;
+}
+.row-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.9rem; height: 1.9rem; border-radius: 50%;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: .9rem;
+  margin-top: .3rem;
+}
+.row-main { min-width: 0; }
+.row-tools { display: flex; gap: .25rem; }
+
+.allergen-picker { margin-top: .45rem; }
+.allergen-picker summary {
+  cursor: pointer; font-size: .92rem; color: var(--fg-muted);
+  padding: .25rem .1rem;
+}
+.allergen-picker summary.has-allergen { color: var(--error); font-weight: 700; }
+.chips { padding: .5rem 0 .2rem; }
+.chips-head { margin: .5rem 0 .3rem; font-size: .86rem; font-weight: 700; color: var(--fg-muted); }
+.chips-body { display: flex; flex-wrap: wrap; gap: .35rem; }
+.chip {
+  display: inline-flex; align-items: center; gap: .25rem;
+  border: 1px solid #b9c3cb; border-radius: 999px;
+  padding: .18rem .6rem; font-size: .9rem; background: #fff; cursor: pointer;
+}
+.chip:hover { background: #eef2f5; }
+.chip-must { border-color: #e0a9a5; background: #fdf5f4; }
+.chip input { margin: 0; }
+
+/* ---------- 検証結果 ---------- */
+
+.result-head {
+  display: flex; flex-wrap: wrap; gap: .75rem;
+  align-items: center; justify-content: space-between; margin-bottom: .75rem;
+}
+.result-head h2 { margin: 0; font-size: 1.25rem; }
+
+.summary { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+.pill {
+  display: inline-block; padding: .25rem .8rem; border-radius: 999px;
+  font-size: .92rem; font-weight: 700; border: 1px solid var(--line); background: #fff;
+}
+.pill-error { background: var(--error-bg); border-color: #e7b4b0; color: var(--error); }
+.pill-warn  { background: var(--warn-bg);  border-color: #e3c793; color: var(--warn); }
+.pill-check { background: var(--check-bg); border-color: #b3caea; color: var(--check); }
+.pill-pass  { background: var(--pass-bg);  border-color: #a9d3b8; color: var(--pass); }
+
+.res-head { font-size: 1.02rem; margin: 1.1rem 0 .5rem; padding-left: .55rem; border-left: 5px solid var(--line); }
+.res-head.res-error { border-color: var(--error); color: var(--error); }
+.res-head.res-warn  { border-color: var(--warn);  color: var(--warn); }
+.res-head.res-check { border-color: var(--check); color: var(--check); }
+.res-head.res-pass  { border-color: var(--pass);  color: var(--pass); }
+.res-group { display: flex; flex-direction: column; gap: .5rem; }
+
+.res-item { border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.res-item > summary {
+  cursor: pointer; padding: .6rem .75rem; display: flex;
+  flex-wrap: wrap; gap: .45rem; align-items: center;
+}
+.res-item.res-error { border-color: #e7b4b0; background: var(--error-bg); }
+.res-item.res-warn  { border-color: #e3c793; background: var(--warn-bg); }
+.res-item.res-check { border-color: #b3caea; background: var(--check-bg); }
+.res-item.res-pass  { border-color: #cdd7dd; }
+.res-title { font-weight: 700; }
+.res-body { padding: 0 .85rem .85rem; }
+.res-msg { margin: .2rem 0 .6rem; }
+.res-hint {
+  background: rgba(255,255,255,.75); border: 1px dashed #b9c3cb;
+  border-radius: 7px; padding: .55rem .75rem; font-size: .93rem; margin-bottom: .6rem;
+}
+.res-src { font-size: .88rem; color: var(--fg-muted); margin: 0; }
+.rule-id { font-family: Consolas, "Courier New", monospace; font-size: .88em; }
+.confirm { font-size: .9rem; font-weight: 700; white-space: nowrap; }
+.confirm input { transform: scale(1.15); margin-right: .25rem; }
+
+.badge {
+  font-size: .74rem; font-weight: 700; padding: .12rem .5rem;
+  border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--fg-muted);
+}
+.badge-law { background: #eef2f5; }
+.badge-custom { background: #efe7f7; border-color: #c8b3de; color: #5b3a86; }
+.badge-unreviewed { background: #fff0f0; border-color: #e7b4b0; color: var(--error); }
+.badge-error { background: var(--error-bg); border-color: #e7b4b0; color: var(--error); }
+.badge-warn { background: var(--warn-bg); border-color: #e3c793; color: var(--warn); }
+.badge-auto { background: var(--pass-bg); border-color: #a9d3b8; color: var(--pass); }
+.badge-manual { background: var(--check-bg); border-color: #b3caea; color: var(--check); }
+
+.msg { padding: .9rem 1.1rem; border-radius: 8px; }
+.msg-error { background: var(--error-bg); border: 1px solid #e7b4b0; }
+.msg p { margin: .3rem 0; }
+
+.custom-status { margin: .6rem 0 0; font-size: .93rem; }
+.custom-status.ok { color: var(--pass); font-weight: 700; }
+.custom-status.ng { color: var(--error); font-weight: 700; }
+
+/* ---------- ラベル案（一括表示枠） ---------- */
+
+.label-preview {
+  --label-font-size: 8pt;
+  margin: .75rem 0;
+  overflow-x: auto;
+}
+.label-table {
+  border-collapse: collapse;
+  border: 1.5pt solid #000;
+  background: #fff;
+  font-size: var(--label-font-size);
+  line-height: 1.5;
+  min-width: 320px;
+  max-width: 520px;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  color: #000;
+}
+.label-table th, .label-table td {
+  border: 1pt solid #000;
+  padding: .35em .6em;
+  vertical-align: top;
+  text-align: left;
+  font-weight: normal;
+}
+.label-table th {
+  white-space: nowrap;
+  width: 1%;
+  background: #fff;
+  letter-spacing: .3em;
+}
+.label-note {
+  max-width: 520px; font-size: var(--label-font-size);
+  margin: .4em 0 0; color: #000;
+}
+.label-meta { font-size: .88rem; color: var(--fg-muted); margin: .5rem 0 0; }
+
+/* ---------- ルール一覧ページ ---------- */
+
+.rules-toolbar { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: flex-end; margin-bottom: .75rem; }
+.rules-toolbar .field.inline { min-width: 200px; }
+.cat-head { margin: 0 0 .75rem; font-size: 1.2rem; color: var(--accent-dark); }
+.rule-card { border: 1px solid var(--line); border-radius: 8px; margin-bottom: .5rem; background: #fafbfc; }
+.rule-card > summary { cursor: pointer; padding: .6rem .75rem; display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+.rule-dl { display: grid; grid-template-columns: 9rem 1fr; gap: .3rem .8rem; margin: 0; font-size: .95rem; }
+.rule-dl dt { font-weight: 700; color: var(--fg-muted); }
+.rule-dl dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 620px) { .rule-dl { grid-template-columns: 1fr; } .rule-dl dd { margin-bottom: .4rem; } }
+
+/* ---------- フッター（免責文は常時表示・非表示にできない） ---------- */
+
+.site-footer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
+  background: #1d2429; color: #fff; padding: .55rem 0;
+  border-top: 3px solid var(--accent);
+}
+.disclaimer { margin: 0; font-size: .93rem; font-weight: 700; }
+.footer-meta { margin: .15rem 0 0; font-size: .8rem; opacity: .8; }
+.footer-meta a { color: #9ecbdc; }
+@media (max-width: 700px) {
+  .disclaimer { font-size: .82rem; }
+  .footer-meta { display: none; }
+  body { padding-bottom: 5rem; }
+}
+
+/* ---------- おしらせ ---------- */
+
+.toast {
+  position: fixed; left: 50%; bottom: 6.5rem; transform: translateX(-50%);
+  background: #1d2429; color: #fff; padding: .7rem 1.4rem;
+  border-radius: 999px; font-weight: 700; z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}

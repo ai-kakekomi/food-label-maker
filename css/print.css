@@ -1,0 +1,74 @@
+/* ============================================================
+ * 印刷用スタイル
+ * 「印刷する」を押したとき、ラベル案（一括表示枠）だけを紙に出します。
+ * 免責文は印刷物にも必ず載ります。
+ * ============================================================ */
+
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+body {
+  background: #fff !important;
+  color: #000 !important;
+  padding: 0 !important;
+  font-size: 10pt;
+}
+
+/* 画面用のUIは印刷しない */
+.site-header,
+.site-nav,
+.notice-bar,
+.col-form,
+.toolbar,
+.result-head .btn,
+.btn-group,
+.toast,
+#results,
+#summary,
+.rules-toolbar {
+  display: none !important;
+}
+
+.layout { display: block !important; }
+.wrap { max-width: none; padding: 0; }
+
+.card {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 0 8mm !important;
+  break-inside: avoid;
+}
+.sticky { position: static !important; max-height: none !important; overflow: visible !important; }
+
+.result-head h2 { font-size: 12pt; margin: 0 0 3mm; }
+
+/* ラベル枠は8ポイント相当以上を保つ */
+.label-preview { overflow: visible !important; }
+.label-table {
+  font-size: max(var(--label-font-size), 8pt) !important;
+  max-width: none;
+  page-break-inside: avoid;
+}
+.label-table th, .label-table td { border: 0.4mm solid #000 !important; }
+
+.label-meta { font-size: 8pt; color: #333 !important; }
+
+/* 免責文は印刷物にも残す */
+.site-footer {
+  position: static !important;
+  background: #fff !important;
+  color: #000 !important;
+  border-top: 0.4mm solid #000 !important;
+  margin-top: 8mm;
+  padding-top: 3mm;
+}
+.disclaimer { font-size: 9pt; }
+.footer-meta { display: block !important; font-size: 8pt; opacity: 1; }
+.footer-meta a { color: #000; }
+
+/* ルール一覧ページの印刷（監査用に全ルールを紙で配れるように） */
+.rule-card { break-inside: avoid; border: 0.3mm solid #666 !important; margin-bottom: 3mm; }
+.rule-card > summary { list-style: none; }
+.rule-card .res-body { display: block !important; }

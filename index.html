@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>食品表示ラベルメーカー｜AIかけこみ寺</title>
+<meta name="description" content="加工食品（一般用）の一括表示を入力し、食品表示基準にもとづくチェックとラベル案の作成ができる無料ツールです。">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/print.css" media="print">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div>
+      <h1>食品表示ラベルメーカー</h1>
+      <p class="tagline">加工食品（一般用）の一括表示を、入力してチェックして、ラベル案にする</p>
+    </div>
+    <nav class="site-nav">
+      <a href="rules.html">ルール一覧（監査モード）</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap notice-bar">
+  <p><strong>入力した内容は、この端末のブラウザの中だけに保存されます。</strong>
+  インターネットに送信することは一切ありません（サーバーもデータベースもありません）。</p>
+</div>
+
+<main class="wrap layout">
+
+  <!-- ============ 左：入力フォーム ============ -->
+  <section class="col-form" aria-label="入力フォーム">
+
+    <div class="toolbar">
+      <span class="toolbar-label">サンプルを入れて試す：</span>
+      <button type="button" class="btn btn-demo" data-sample="クッキー">サンプル1 クッキー</button>
+      <button type="button" class="btn btn-demo" data-sample="くるみパン">サンプル2 くるみパン</button>
+      <button type="button" class="btn btn-ghost" id="btn-clear">入力を全部消す</button>
+    </div>
+
+    <form id="label-form" autocomplete="off">
+
+      <fieldset class="card">
+        <legend>1. 名称</legend>
+        <label class="field">
+          <span class="field-label">名称 <em class="req">必須</em></span>
+          <input type="text" id="f-name" placeholder="例：焼き菓子（クッキー）">
+          <span class="help">商品名・ブランド名ではなく、中身を表す一般的な名称を書きます。</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>2. 原材料名</legend>
+        <p class="help">
+          <strong>重量の多い順に</strong>入力してください。表示に印刷する文字をそのまま入力します
+          （例：<code>マーガリン（乳成分を含む）</code>）。<br>
+          あわせて、その原材料に<strong>実際に含まれるアレルゲン</strong>をチェックしてください。
+          チェックした内容と表示文が食い違うと、検証で指摘されます。
+        </p>
+        <div id="ingredient-rows" class="rows"></div>
+        <button type="button" class="btn btn-add" data-add="ingredient">＋ 原材料を追加</button>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>3. 添加物</legend>
+        <p class="help">
+          添加物に占める重量の多い順に入力します。用途名の併記が必要な8用途
+          （甘味料・着色料・保存料・増粘剤等・酸化防止剤・発色剤・漂白剤・防かび剤）は
+          <code>保存料（ソルビン酸）</code> のように物質名も書きます。
+        </p>
+        <div id="additive-rows" class="rows"></div>
+        <button type="button" class="btn btn-add" data-add="additive">＋ 添加物を追加</button>
+
+        <label class="field mt">
+          <span class="field-label">原材料と添加物の区分方法</span>
+          <select id="f-sep">
+            <option value="">（選んでください）</option>
+            <option value="スラッシュ">原材料名欄でスラッシュ「／」で区切る</option>
+            <option value="改行">原材料名欄で改行して分ける</option>
+            <option value="別欄">「添加物」の欄を別に設ける</option>
+          </select>
+          <span class="help">添加物を使う場合、原材料と明確に区分する必要があります。</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>4. アレルゲンの表示方式</legend>
+        <div class="radio-row">
+          <label class="radio"><input type="radio" name="allergen-mode" value="個別表示" checked> 個別表示（原材料ごとに「（○○を含む）」を書く）</label>
+          <label class="radio"><input type="radio" name="allergen-mode" value="一括表示"> 一括表示（最後にまとめて「（一部に○○を含む）」を書く）</label>
+        </div>
+        <p class="help">この2つを<strong>混ぜて使うことはできません</strong>。本ツールは個別表示を基本としています。</p>
+
+        <label class="field" id="wrap-ikkatsu" hidden>
+          <span class="field-label">一括表示に書くアレルゲン</span>
+          <input type="text" id="f-ikkatsu" placeholder="例：小麦・卵・乳成分・大豆">
+          <span class="help">
+            品目名を「・」でつないで入力します。前後の「（一部に」「を含む）」は自動で付きます。<br>
+            乳は「乳成分」と書きます。代替表記で書かれている原材料（例：小麦粉）の分も<strong>省略せずに全部</strong>書きます。
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">アレルゲン表示の対象範囲</span>
+          <select id="f-allergen-scope">
+            <option value="28品目">28品目（特定原材料8品目＋準ずるもの20品目）</option>
+            <option value="8品目">8品目（特定原材料のみ）</option>
+          </select>
+          <span class="help">どちらを対象にしているかを一括表示の枠外に書くことが推奨されています。</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>5. 原料原産地・原産国</legend>
+        <label class="checkbox">
+          <input type="checkbox" id="f-import"> これは輸入品です
+        </label>
+        <label class="field" id="wrap-origin">
+          <span class="field-label">原料原産地名</span>
+          <input type="text" id="f-origin" placeholder="例：国内製造（小麦粉）／豚肉（アメリカ、カナダ）">
+          <span class="help">重量割合が1位の原材料の原産地を書きます。加工食品なら「国内製造」「○○製造」、生鮮食品なら「国産」「○○産」。</span>
+        </label>
+        <label class="field" id="wrap-country" hidden>
+          <span class="field-label">原産国名</span>
+          <input type="text" id="f-country" placeholder="例：アメリカ">
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>6. 内容量・期限・保存方法</legend>
+        <label class="field">
+          <span class="field-label">内容量 <em class="req">必須</em></span>
+          <input type="text" id="f-qty" placeholder="例：100g／500mL／18枚（3枚×6袋）">
+          <span class="help">単位を必ず書きます（g・kg・mL・L・個・枚 など）。</span>
+        </label>
+
+        <div class="grid-2">
+          <label class="field">
+            <span class="field-label">期限の種別</span>
+            <select id="f-date-type">
+              <option value="賞味期限">賞味期限（品質が急速に劣化しないもの）</option>
+              <option value="消費期限">消費期限（品質が急速に劣化するもの）</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">製造日から期限までの期間</span>
+            <select id="f-date-span">
+              <option value="3か月以内">3か月以内（年月日まで表示）</option>
+              <option value="3か月超">3か月超（年月まででも可）</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">期限の日付 <em class="req">必須</em></span>
+          <input type="text" id="f-date" placeholder="例：2027.03.31／2027.03／令和9年3月31日">
+        </label>
+
+        <label class="field">
+          <span class="field-label">保存方法 <em class="req">必須</em></span>
+          <input type="text" id="f-storage" placeholder="例：直射日光、高温多湿を避けて保存してください。">
+          <span class="help">開封前の保存方法を書きます。</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>7. 食品関連事業者</legend>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field-label">事項名</span>
+            <select id="f-biz-type">
+              <option value="製造者">製造者</option>
+              <option value="加工者">加工者</option>
+              <option value="販売者">販売者</option>
+              <option value="輸入者">輸入者</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">氏名または名称 <em class="req">必須</em></span>
+            <input type="text" id="f-biz-name" placeholder="例：株式会社かけこみ製菓">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">住所 <em class="req">必須</em></span>
+          <input type="text" id="f-biz-addr" placeholder="例：愛知県名古屋市中区栄1-1-1">
+        </label>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field-label">製造所固有記号（使う場合のみ）</span>
+            <input type="text" id="f-code" placeholder="例：＋ABC">
+            <span class="help">「＋」を冠して表示します。</span>
+          </label>
+          <label class="field">
+            <span class="field-label">固有記号の応答義務への対応</span>
+            <input type="text" id="f-code-contact" placeholder="例：お問合せ 052-000-0000">
+            <span class="help">問合せ先電話番号／ウェブサイト／全製造所一覧のいずれか。</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>8. 表示の体裁</legend>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field-label">表示可能面積（平方センチメートル）</span>
+            <input type="number" id="f-area" min="1" step="1" value="300">
+            <span class="help">150以下なら5.5ポイントまで、30以下なら一部項目を省略できます。</span>
+          </label>
+          <label class="field">
+            <span class="field-label">文字の大きさ（ポイント）</span>
+            <input type="number" id="f-font" min="1" step="0.5" value="8">
+            <span class="help">原則8ポイント以上。</span>
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">枠外の注意喚起など（任意）</span>
+          <textarea id="f-note" rows="2" placeholder="例：本品製造工場では、そば・落花生を含む製品を生産しています。"></textarea>
+        </label>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>9. 社内ルールの読み込み（任意）</legend>
+        <p class="help">
+          自社の社内ルールをYAMLファイルで追加できます。書き方は
+          <code>rules/custom/sample.yaml</code> を参考にしてください。
+          読み込んだファイルもこの端末の外には出ません。
+        </p>
+        <input type="file" id="f-custom" accept=".yaml,.yml">
+        <p id="custom-status" class="custom-status"></p>
+      </fieldset>
+
+    </form>
+  </section>
+
+  <!-- ============ 右：検証結果とラベル ============ -->
+  <section class="col-result" aria-label="検証結果とラベル案">
+
+    <div class="card sticky">
+      <div class="result-head">
+        <h2>検証結果</h2>
+        <button type="button" class="btn btn-primary" id="btn-validate">この内容を検証する</button>
+      </div>
+      <div id="summary" class="summary"></div>
+      <div id="results"></div>
+    </div>
+
+    <div class="card">
+      <div class="result-head">
+        <h2>ラベル案（一括表示枠）</h2>
+        <div class="btn-group">
+          <button type="button" class="btn" id="btn-copy">テキストをコピー</button>
+          <button type="button" class="btn" id="btn-print">印刷する</button>
+        </div>
+      </div>
+      <p class="help">
+        これは<strong>下書き</strong>です。実際の版下は、下の免責文のとおり必ず人が最終確認してください。
+      </p>
+      <div id="label-preview" class="label-preview"></div>
+      <p class="label-meta" id="label-meta"></p>
+    </div>
+
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="disclaimer">
+      本ツールは参考情報です。表示内容の最終確認は必ず食品表示基準および消費者庁の最新ガイドラインで行ってください。
+    </p>
+    <p class="footer-meta">
+      食品表示ラベルメーカー ／ 非営利団体 AIかけこみ寺 ／
+      ライセンス CC BY 4.0 ／ 無保証 ／
+      <a href="rules.html">ルール一覧</a>
+    </p>
+  </div>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="vendor/js-yaml.min.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/label.js"></script>
+<script src="js/samples.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
