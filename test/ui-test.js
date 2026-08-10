@@ -268,6 +268,54 @@ function ページを開く(BASE, page) {
   ok(!バナー(), '要修正0件でも要確認があれば成功バナーは出さない');
 
   ok(p.エラー.length === 0, '成功バナーの操作でJavaScriptのエラーが発生していない', p.エラー.join(' / '));
+
+  /* ============================================================
+   * 1-3. 栄養成分表示の入力欄
+   * ============================================================ */
+  見出し('1-3. 栄養成分表示の入力欄');
+
+  d.querySelector('[data-sample="クッキー"]').click();
+  await wait(400);
+
+  ok(!!d.getElementById('f-nutri-energy'), '栄養成分の入力欄がある');
+  ok(/栄養成分表示（100g当たり）/.test(txt(d.getElementById('label-preview'))),
+    'ラベル案に栄養成分表示の枠が出る');
+  ok(/480kcal/.test(txt(d.getElementById('label-preview'))), '熱量に単位が付いて表示される');
+
+  /* 1食分を選ぶと目安量の欄が出る */
+  var 単位 = d.getElementById('f-nutri-unit');
+  単位.value = '1食分';
+  単位.dispatchEvent(new w.Event('change'));
+  await wait(200);
+  ok(!d.getElementById('wrap-nutri-serving').hidden, '1食分を選ぶと目安量の欄が現れる');
+  d.getElementById('btn-validate').click();
+  await wait(300);
+  ok(/1食分/.test(txt(d.getElementById('results'))), '目安量が空だと指摘が出る');
+
+  var 目安 = d.getElementById('f-nutri-serving');
+  目安.value = '50g';
+  目安.dispatchEvent(new w.Event('input'));
+  await wait(200);
+  ok(/栄養成分表示（1食分（50g）当たり）/.test(txt(d.getElementById('label-preview'))),
+    '目安量がラベル案に併記される');
+
+  /* ナトリウムからの換算ボタン */
+  d.getElementById('f-nutri-na-input').value = '200';
+  d.getElementById('btn-na-convert').click();
+  await wait(200);
+  ok(d.getElementById('f-nutri-salt').value === '0.51',
+    'ナトリウム200mgが食塩相当量0.51gに換算される', d.getElementById('f-nutri-salt').value);
+
+  /* 省略のチェックで入力欄が隠れ、ラベル案からも消える */
+  var 省略 = d.getElementById('f-nutri-omit');
+  省略.checked = true;
+  省略.dispatchEvent(new w.Event('change'));
+  await wait(200);
+  ok(d.getElementById('wrap-nutrition').hidden, '省略にチェックすると入力欄が隠れる');
+  ok(!/栄養成分表示/.test(txt(d.getElementById('label-preview'))),
+    '省略にチェックするとラベル案から栄養成分表示が消える');
+
+  ok(p.エラー.length === 0, '栄養成分の操作でJavaScriptのエラーが発生していない', p.エラー.join(' / '));
   w.close();
 
   /* ============================================================

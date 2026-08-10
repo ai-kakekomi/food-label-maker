@@ -45,7 +45,9 @@ var 既知の種別 = [
   '必須項目', '正規表現一致必須', '正規表現禁止', '数値下限', '用途名併記',
   'Lフェニルアラニン', 'アレルゲン表示', 'アレルゲン一括網羅', 'アレルゲン方式併用',
   '乳の表記', '乳由来の表記', '卵白卵黄', '大分類表記', '期限日付書式',
-  '製造所固有記号', 'アレルゲン整合性', '確認事項'
+  '製造所固有記号', 'アレルゲン整合性', '確認事項',
+  '栄養成分5項目', '栄養成分順序', '栄養成分数値', '栄養成分食品単位',
+  '栄養成分ナトリウム併記', '栄養成分推定値文言'
 ];
 
 index['法令ルール'].concat(['custom/sample.yaml']).forEach(function (f) {
@@ -154,10 +156,22 @@ ok(e2.indexOf('allergen-mandatory-8') >= 0, 'サンプル2でくるみの表示�
 ok(e2.indexOf('allergen-egg-white-yolk') >= 0, 'サンプル2で卵黄の「卵を含む」漏れを検出する');
 ok(e2.indexOf('additive-usage-name-8') >= 0, 'サンプル2で「保存料」の物質名なしを検出する');
 ok(e2.indexOf('origin-of-material') >= 0, 'サンプル2で原料原産地名の未記入を検出する');
+ok(e2.indexOf('nutrition-5-items-required') >= 0, 'サンプル2で食塩相当量の未記入を検出する');
+ok(e2.indexOf('nutrition-sodium-notation') >= 0, 'サンプル2でナトリウム併記の要件不足を検出する');
 
 /* --- 個別のふるまい --- */
 function 素材(over) {
   return Object.assign(JSON.parse(JSON.stringify(Samples['クッキー'].データ)), over || {});
+}
+
+/* 栄養成分の入力をひとかたまりで作る（値は法令の順序どおりに並べる） */
+function 栄養(over) {
+  return Object.assign({
+    省略: false, 省略理由: '', 食品単位: '100g', 一食分の量: '',
+    熱量: '480', たんぱく質: '6.2', 脂質: '24.5', 炭水化物: '60.1', 食塩相当量: '0.5',
+    ナトリウム併記: false, ナトリウム塩無添加: false, ナトリウム: '',
+    値の性格: '分析値', 推定値文言: ''
+  }, over || {});
 }
 
 /* 空の入力では必須項目が error になる */
@@ -165,11 +179,14 @@ var 空 = {
   名称: '', 原材料: [], 添加物: [], 添加物区分方法: '', アレルゲン表示方式: '個別表示',
   アレルゲン一括文: '', 内容量: '', 期限: { 種別: '賞味期限', 日付: '', 期間区分: '3か月以内' },
   保存方法: '', 事業者: { 区分: '製造者', 名称: '', 住所: '' }, 原料原産地名: '', 原産国名: '',
-  輸入品: false, 文字サイズ: 8, 表示可能面積: 300, 確認済み: {}
+  輸入品: false, 文字サイズ: 8, 表示可能面積: 300,
+  栄養成分: 栄養({ 熱量: '', たんぱく質: '', 脂質: '', 炭水化物: '', 食塩相当量: '' }),
+  確認済み: {}
 };
 var e0 = idで(検証(空), 'error');
 ['name-required', 'ingredient-required', 'quantity-required', 'date-required',
-  'storage-required', 'business-name-required', 'business-address-required'].forEach(function (id) {
+  'storage-required', 'business-name-required', 'business-address-required',
+  'nutrition-5-items-required'].forEach(function (id) {
     ok(e0.indexOf(id) >= 0, '空入力で ' + id + ' が error になる');
   });
 
@@ -290,6 +307,78 @@ var e輸入 = idで(検証(輸入), 'error');
 ok(e輸入.indexOf('origin-country-import') >= 0, '輸入品で原産国名の未記入を検出する');
 ok(e輸入.indexOf('origin-of-material') < 0, '輸入品では原料原産地名を求めない');
 
+/* --- 栄養成分表示 --- */
+
+/* 5項目の欠落 */
+var 欠落 = 素材({ 栄養成分: 栄養({ 脂質: '' }) });
+ok(idで(検証(欠落), 'error').indexOf('nutrition-5-items-required') >= 0, '脂質の未記入を検出する');
+ok(idで(検証(素材({ 栄養成分: 栄養() })), 'error').indexOf('nutrition-5-items-required') < 0,
+  '5項目がそろっていれば通る');
+
+/* 項目の順序（別記様式2） */
+var 順序NG = 素材({
+  栄養成分: {
+    省略: false, 食品単位: '100g', 一食分の量: '',
+    たんぱく質: '6.2', 熱量: '480', 脂質: '24.5', 炭水化物: '60.1', 食塩相当量: '0.5',
+    ナトリウム併記: false, ナトリウム塩無添加: false, ナトリウム: '',
+    値の性格: '分析値', 推定値文言: ''
+  }
+});
+ok(idで(検証(順序NG), 'error').indexOf('nutrition-item-order') >= 0,
+  'たんぱく質が熱量より先だと順序エラーになる');
+ok(idで(検証(素材({ 栄養成分: 栄養() })), 'error').indexOf('nutrition-item-order') < 0,
+  '正しい順序なら順序エラーにしない');
+
+/* 値は数値で入力する */
+ok(idで(検証(素材({ 栄養成分: 栄養({ 熱量: '約480kcal' }) })), 'error')
+  .indexOf('nutrition-value-numeric') >= 0, '「約480kcal」は数値エラーになる');
+ok(idで(検証(素材({ 栄養成分: 栄養({ 炭水化物: '20〜25' }) })), 'error')
+  .indexOf('nutrition-value-numeric') < 0, '下限値・上限値の「20〜25」は通る');
+
+/* 食品単位（何あたりの量か） */
+ok(idで(検証(素材({ 栄養成分: 栄養({ 食品単位: '1食分', 一食分の量: '' }) })), 'error')
+  .indexOf('nutrition-food-unit') >= 0, '1食分で目安量が空だと error になる');
+ok(idで(検証(素材({ 栄養成分: 栄養({ 食品単位: '1食分', 一食分の量: '50g' }) })), 'error')
+  .indexOf('nutrition-food-unit') < 0, '1食分で目安量があれば通る');
+ok(idで(検証(素材({ 栄養成分: 栄養({ 食品単位: '' }) })), 'error')
+  .indexOf('nutrition-food-unit') >= 0, '食品単位が未選択だと error になる');
+
+/* ナトリウム表記 */
+ok(idで(検証(素材({ 栄養成分: 栄養({ ナトリウム併記: true, ナトリウム: '200', ナトリウム塩無添加: false }) })), 'error')
+  .indexOf('nutrition-sodium-notation') >= 0, 'ナトリウム塩無添加でないのにナトリウムを併記すると error になる');
+ok(idで(検証(素材({ 栄養成分: 栄養({ ナトリウム併記: true, ナトリウム: '200', ナトリウム塩無添加: true, 食塩相当量: '' }) })), 'error')
+  .indexOf('nutrition-sodium-notation') >= 0, 'ナトリウム併記でも食塩相当量が空なら error になる');
+ok(idで(検証(素材({ 栄養成分: 栄養({ ナトリウム併記: true, ナトリウム: '200', ナトリウム塩無添加: true }) })), 'error')
+  .indexOf('nutrition-sodium-notation') < 0, 'ナトリウム塩無添加＋食塩相当量ありなら通る');
+ok(idで(検証(素材({ 栄養成分: 栄養() })), 'error').indexOf('nutrition-sodium-notation') < 0,
+  'ナトリウムを併記しない場合はこのルールを適用しない');
+
+/* ナトリウムからの換算（200mg → 0.51g） */
+ok(Engine.食塩相当量に換算(200) === 0.51, 'ナトリウム200mgは食塩相当量0.51gになる',
+  String(Engine.食塩相当量に換算(200)));
+ok(Engine.食塩相当量に換算('あ') === null, '数値でない入力は換算しない');
+
+/* 推定値の併記文言 */
+ok(idで(検証(素材({ 栄養成分: 栄養({ 値の性格: '推定値', 推定値文言: '' }) })), 'error')
+  .indexOf('nutrition-estimated-wording') >= 0, '推定値で文言が未選択だと error になる');
+ok(idで(検証(素材({ 栄養成分: 栄養({ 値の性格: '推定値', 推定値文言: '推定値' }) })), 'error')
+  .indexOf('nutrition-estimated-wording') < 0, '推定値で文言を選んでいれば通る');
+ok(id全部(検証(素材({ 栄養成分: 栄養({ 値の性格: '推定値', 推定値文言: '推定値' }) })))
+  .indexOf('nutrition-estimated-basis-record') >= 0, '推定値のときは根拠資料の確認項目を出す');
+ok(id全部(検証(素材({ 栄養成分: 栄養({ 値の性格: '分析値' }) })))
+  .indexOf('nutrition-estimated-basis-record') < 0, '分析値のときは根拠資料の確認項目を出さない');
+
+/* 省略を選んだときは、栄養成分のチェックを止める */
+var 省略 = 素材({ 栄養成分: 栄養({ 省略: true, 省略理由: '小規模の事業者', 熱量: '', たんぱく質: '', 脂質: '', 炭水化物: '', 食塩相当量: '' }) });
+var r省略 = 検証(省略);
+['nutrition-5-items-required', 'nutrition-item-order', 'nutrition-value-numeric',
+  'nutrition-food-unit', 'nutrition-sodium-notation', 'nutrition-estimated-wording'].forEach(function (id) {
+    ok(id全部(r省略).indexOf(id) < 0, '省略時は ' + id + ' を適用しない');
+  });
+ok(id全部(r省略).indexOf('nutrition-omission-requirements') >= 0, '省略時は要件の確認項目を出す');
+ok(id全部(検証(素材({ 栄養成分: 栄養() }))).indexOf('nutrition-omission-requirements') < 0,
+  '省略しないときは省略の確認項目を出さない');
+
 /* ---------------- 3. ラベル案の組み立て ---------------- */
 
 見出し('3. ラベル案の組み立て');
@@ -305,6 +394,28 @@ var 一括txt = Builder.テキストを作る(Object.assign({}, Samples['クッ�
   アレルゲン表示方式: '一括表示', アレルゲン一括文: '小麦・乳成分・大豆'
 }));
 ok(一括txt.indexOf('（一部に小麦・乳成分・大豆を含む）') >= 0, '一括表示の文が自動で組み立てられる');
+
+/* 栄養成分表示（別記様式2） */
+ok(txt.indexOf('栄養成分表示（100g当たり）') >= 0, 'ラベル案に栄養成分表示の見出しが入る');
+ok(txt.indexOf('480kcal') >= 0, '熱量にkcalが付く');
+ok(txt.indexOf('0.5g') >= 0, '食塩相当量にgが付く');
+ok(txt.indexOf('推定値') >= 0, '推定値の併記文言がラベル案に入る');
+
+var 一食分txt = Builder.テキストを作る(Object.assign({}, Samples['クッキー'].データ, {
+  栄養成分: 栄養({ 食品単位: '1食分', 一食分の量: '50g' })
+}));
+ok(一食分txt.indexOf('栄養成分表示（1食分（50g）当たり）') >= 0, '1食分のときは目安量が併記される');
+
+var Naテキスト = Builder.テキストを作る(Object.assign({}, Samples['クッキー'].データ, {
+  栄養成分: 栄養({ ナトリウム併記: true, ナトリウム塩無添加: true, ナトリウム: '200', 食塩相当量: '0.51' })
+}));
+ok(Naテキスト.indexOf('ナトリウム 200mg（食塩相当量 0.51g）') >= 0,
+  'ナトリウム併記のときは食塩相当量が括弧書きになる');
+
+var 省略txt = Builder.テキストを作る(Object.assign({}, Samples['クッキー'].データ, {
+  栄養成分: 栄養({ 省略: true })
+}));
+ok(省略txt.indexOf('栄養成分表示') < 0, '省略した場合はラベル案に栄養成分表示を出さない');
 
 var html = Builder.HTMLを作る(Samples['クッキー'].データ);
 ok(html.indexOf('<table class="label-table">') >= 0, 'ラベル案のHTMLが生成される');
