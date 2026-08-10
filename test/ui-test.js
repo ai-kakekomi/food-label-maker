@@ -280,7 +280,7 @@ function ページを開く(BASE, page) {
   await wait(500);
 
   ok(/使い方マニュアル/.test(dm.title), 'タイトルが設定されている', dm.title);
-  ['what', 'start', 'steps', 'result', 'allergen', 'rules', 'custom', 'improve', 'faq', 'disclaimer']
+  ['what', 'start', 'steps', 'result', 'allergen', 'detect', 'ask-ai', 'faq', 'disclaimer']
     .forEach(function (id) {
       ok(!!dm.getElementById(id), 'セクション #' + id +' がある');
     });
@@ -288,61 +288,44 @@ function ページを開く(BASE, page) {
   var body = txt(dm.body);
   ok(/本ツールは参考情報です。表示内容の最終確認は必ず食品表示基準および消費者庁の最新ガイドラインで行ってください。/.test(body),
     '免責文が記載されている');
-  ok(/UTF-8/.test(body), 'YAMLを保存するときの文字コードの注意がある');
-  ok(/タブ文字は使えません/.test(body), 'YAMLのインデントの注意がある');
-  ok(/最終確認日/.test(body), '「最終確認日」の直し方の説明がある');
-  ok(/sample\.yaml/.test(body), '社内ルールのテンプレートの場所が書いてある');
   ok(/乳成分を含む/.test(body), 'アレルゲン表記の注意（乳成分）がある');
+  ok(/この面の右側に記載/.test(body), '枠外表示（期限）のOK例が書いてある');
+  ok(/本品製造工場では/.test(body), '枠外表示（コンタミネーション注意喚起）のOK例が書いてある');
+  ok(!/CC BY/.test(body), 'CC BY 4.0 の記述が残っていない');
+  ok(/MIT/.test(body), 'ライセンス（MIT）の記載がある');
 
-  /* ルールの直し方は「チャットAIに頼む」が第一の手順であること */
-  var rulesSec = dm.getElementById('rules');
-  var rulesTxt = txt(rulesSec);
-  ok(!!dm.getElementById('ask-ai'), 'ルール章に「AIに頼む」への目印（#ask-ai）がある');
-  ok(/ChatGPT/.test(rulesTxt) && /Claude/.test(rulesTxt),
-    'ルール章にチャットAIの具体名がある');
-  ok(/無料版/.test(rulesTxt), 'チャットAIは無料版で足りることが書いてある');
-  ok(/インストール/.test(rulesTxt), 'インストール不要である旨が書いてある');
-  ok(/全文を返してください/.test(rulesTxt), '貼り付けて頼むプロンプト例がある');
-  ok((rulesTxt.match(/全文/g) || []).length >= 2, 'プロンプト例が複数ある');
-  ok(/もう一度頼めば|もう一度AIに頼み直せば/.test(rulesTxt),
-    '返答が壊れていたときの復旧方法が書いてある');
+  /* 「自分用に変えたい（AIに頼む）」の章 */
+  var ask = dm.getElementById('ask-ai');
+  var askTxt = txt(ask);
+  ok(!!ask, '「AIに頼む」の章（#ask-ai）がある');
+  ok(/Claude Code/.test(askTxt), 'AIコーディングエージェントの具体名がある');
+  ok(!!dm.getElementById('rules') && !!dm.getElementById('custom') && !!dm.getElementById('improve'),
+    '旧章のリンク先（#rules・#custom・#improve）が残っている');
 
-  /* 構文の注意は折りたたみの補足に降格されていること（削除はされていない） */
-  var caution = dm.getElementById('yaml-caution');
-  ok(!!caution, '構文の注意（#yaml-caution）が残っている');
-  ok(caution && caution.tagName.toLowerCase() === 'details',
-    '構文の注意が折りたたみ（details）になっている', caution && caution.tagName);
-  ok(caution && !caution.hasAttribute('open'), '構文の注意は既定で閉じている');
-  ok(caution && /手で直したい/.test(txt(caution.querySelector('summary'))),
-    '構文の注意が「手で直したい人向け」と示されている',
-    caution && txt(caution.querySelector('summary')));
+  /* コピーできるプロンプトブロック */
+  var blocks = ask.querySelectorAll('.prompt-block');
+  ok(blocks.length >= 2, 'コピーできるプロンプトが2つ以上ある', blocks.length + '個');
+  [].slice.call(blocks).forEach(function (b, i) {
+    var btn = b.querySelector('button.js-copy');
+    var pre = btn && dm.getElementById(btn.getAttribute('data-target'));
+    ok(!!btn, 'プロンプト' + (i + 1) + ' にコピーボタンがある');
+    ok(!!pre, 'プロンプト' + (i + 1) + ' のコピー対象が存在する',
+      btn && btn.getAttribute('data-target'));
+  });
+  var setup = txt(dm.getElementById('p-setup'));
+  ok(/git clone/.test(setup) && /git pull/.test(setup),
+    'ソース取得のプロンプトに clone と pull の両方が入っている');
+  ok(/github\.com\/ai-kakekomi\/food-label-maker/.test(setup),
+    'ソース取得のプロンプトにリポジトリのURLが入っている');
+  ok(/社内ルール/.test(txt(dm.getElementById('p-custom'))),
+    '社内ルールを頼むプロンプトがある');
 
-  /* AIに頼む説明が、構文の注意より前に出てくること（順序＝優先度） */
-  ok(rulesTxt.indexOf('チャットAI') < rulesTxt.indexOf('インデント'),
-    '「AIに頼む」の説明が構文の注意より前にある');
+  /* ユーザーにYAMLを書かせる導線が消えていること */
+  ok(!/タブ文字は使えません/.test(body), 'YAMLの書き方の注意（タブ文字）が消えている');
+  ok(!dm.getElementById('yaml-caution'), 'YAML構文の折りたたみが消えている');
 
-  /* 社内ルール章もAIに頼む前提になっていること */
-  var customTxt = txt(dm.getElementById('custom'));
-  ok(/貼り付け/.test(customTxt), '社内ルール章にも貼り付けて頼む説明がある');
-  ok(/全文/.test(customTxt), '社内ルール章にプロンプト例がある');
-
-  /* 8章の段階表がチャットAI／コーディングエージェントの並びになっていること */
-  var improveTxt0 = txt(dm.getElementById('improve'));
-  ok(/無料のチャットAIだけ/.test(improveTxt0), '段階表の第一歩が「無料のチャットAIだけ」になっている');
-  ok(/コーディングエージェント/.test(improveTxt0), '段階表の次の一歩がコーディングエージェントになっている');
-  ok(!/メモ帳などのエディタだけ/.test(improveTxt0), '段階表からメモ帳前提の記述が消えている');
-  ok(improveTxt0.indexOf('無料のチャットAIだけ') < improveTxt0.indexOf('AIコーディングエージェント'),
-    '段階表がチャットAI → コーディングエージェントの順になっている');
-
-  /* 「改造は自由」セクション */
-  var improve = txt(dm.getElementById('improve'));
-  ok(/CC BY 4\.0/.test(improve), '改造セクションにライセンス（CC BY 4.0）の記載がある');
-  ok(/Claude Code/.test(improve), '改造セクションにAIコーディングエージェントの記載がある');
-  ok(/Download ZIP/.test(improve), '改造セクションにコードの入手方法の記載がある');
-  ok(/クレジット/.test(improve), '改造セクションにクレジット表記のお願いがある');
-  ok(/無料/.test(improve), '改造セクションに無料AI教室の案内がある');
-  var gh = dm.querySelector('#improve a[href*="github.com/ai-kakekomi/food-label-maker"]');
-  ok(!!gh, '改造セクションにGitHubリポジトリへのリンクがある');
+  var gh = dm.querySelector('#ask-ai a[href*="github.com/ai-kakekomi/food-label-maker"]');
+  ok(!!gh, 'GitHubリポジトリへのリンクがある');
   ok(gh && gh.getAttribute('target') === '_blank' && /noopener/.test(gh.getAttribute('rel') || ''),
     'GitHubリンクが別タブ＋rel=noopener で開く');
 

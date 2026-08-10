@@ -418,6 +418,24 @@ input:focus, select:focus, textarea:focus {
   font-size: .93rem; line-height: 1.7; margin: .6rem 0;
 }
 .manual pre.tree { background: #eef1f4; color: var(--fg); }
+
+/* コピーできるプロンプトのブロック */
+.prompt-block {
+  border: 1px solid var(--line); border-radius: 8px;
+  margin: .8rem 0; overflow: hidden; background: #21262b;
+}
+.prompt-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  padding: .5rem .8rem; background: #2c333a; border-bottom: 1px solid #3a434c;
+}
+.prompt-title { color: #d7e0e7; font-size: .92rem; font-weight: 600; }
+.prompt-block .btn-mini {
+  background: #3a434c; border-color: #4c5762; color: #e8edf1; white-space: nowrap;
+}
+.prompt-block .btn-mini:hover { background: #4c5762; color: #fff; }
+.manual .prompt-block pre.code {
+  margin: 0; border-radius: 0; white-space: pre-wrap; word-break: break-word;
+}
 .manual pre .c { color: #8fb3c7; }
 .howto {
   border: 1px dashed #b9c3cb; border-radius: 8px;

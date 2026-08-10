@@ -43,9 +43,7 @@
       <li><a href="#result">検証結果の読み方（4つの色分け）</a></li>
       <li><a href="#allergen">アレルゲンの入力のしかた（いちばん大事なところ）</a></li>
       <li><a href="#detect">機械が見つけられること・見つけられないこと（動作例）</a></li>
-      <li><a href="#rules">ルールやチェック内容を変えたい（AIに頼む）</a></li>
-      <li><a href="#custom">社内ルールを追加する</a></li>
-      <li><a href="#improve">ツール本体を改造する（改造は自由です）</a></li>
+      <li><a href="#ask-ai">自分用に変えたい（AIに頼む）</a></li>
       <li><a href="#faq">困ったときは</a></li>
       <li><a href="#disclaimer">免責事項</a></li>
     </ol>
@@ -592,73 +590,80 @@
   </section>
 
   <!-- ============ 7 ============ -->
-  <section class="card" id="rules">
-    <h2>7. ルールやチェック内容を変えたい</h2>
-    <p class="callout">
-      <strong>このツールの一番の特徴です。</strong>
-      チェックのルールは、プログラムの中ではなく<strong>日本語で書かれたファイル</strong>にまとまっています。
-      法令が変わったときも、文言を分かりやすくしたいときも、そのファイルを直すだけで対応できます。
-      そして<strong>その作業は、AIに日本語で頼めばやってもらえます。</strong>
-    </p>
+  <section class="card" id="ask-ai">
+    <span id="rules"></span><span id="custom"></span><span id="improve"></span>
+    <h2>7. 自分用に変えたい（AIに頼む）</h2>
 
-    <h3 id="ask-ai">やり方：ソースをダウンロードして、AIエージェントに頼む</h3>
-    <p>
-      <strong>Claude Code</strong> や <strong>Codex</strong> のような「AIコーディングエージェント」と呼ばれる道具があります。
-      フォルダを渡して<strong>日本語で「ここをこう変えて」と頼むだけ</strong>で、
-      AIが中身を読んで、直して、動かして確かめるところまでやってくれます。
-      <strong>プログラミングの経験も、ファイルの書き方の知識も要りません。</strong>
+    <p class="callout">
+      <strong>このツールは、コピーも改造も配り直すのも自由です。</strong>
+      チェックのルールは、プログラムの中ではなく<strong>日本語で書かれたファイル</strong>にまとまっています。
+      そして、その書き換えも、社内ルールの追加も、画面そのものの改造も、
+      <strong>AIに日本語で頼めばやってもらえます。</strong>
+      プログラミングの経験も、ファイルの書き方の知識も要りません。
       実は、このツール自体もそうやって作られました。
     </p>
 
-    <ol class="steps steps-compact">
-      <li>
-        <h3>ソースを手に入れる</h3>
-        <p>
-          GitHubのページを開いて、緑色の「Code」ボタン →「Download ZIP」を選び、
-          ダウンロードしたZIPを展開します。<strong>これだけで大丈夫です。</strong>
-        </p>
-        <p>
-          <a href="https://github.com/ai-kakekomi/food-label-maker" target="_blank" rel="noopener"
-             class="btn btn-primary inline-btn">GitHubでソースを見る・ダウンロードする</a>
-        </p>
-        <p class="help">
-          Gitという道具を使える方は <code>git clone https://github.com/ai-kakekomi/food-label-maker.git</code> でも構いません。
-          あとから最新版を取り込むときは <code>git pull</code> です。知らなくても、まったく問題ありません。
-        </p>
-      </li>
-      <li>
-        <h3>そのフォルダをAIエージェントに渡す</h3>
-        <p>
-          Claude Code などを用意して、<strong>展開したフォルダを開いた状態で起動</strong>します。
-          導入の手順は道具によって違うので、公式の案内に沿って進めてください。
-        </p>
-      </li>
-      <li>
-        <h3>日本語で頼む</h3>
-        <p>
-          専門用語は要りません。<strong>やりたいことをそのまま書けば通じます。</strong>
-          どのファイルを直せばよいかは、AIが自分で探します。
-        </p>
-      </li>
-      <li>
-        <h3>画面で確かめる</h3>
-        <p>
-          ブラウザで再読み込み（<kbd>Ctrl</kbd>＋<kbd>F5</kbd>）して、
-          <a href="rules.html">ルール一覧の画面</a>に反映されているか見ます。
-          「動かして確認して」と頼めば、AIが確認まで済ませてくれます。
-        </p>
-      </li>
-    </ol>
+    <h3>手順1　このプロンプトをAIにコピペする</h3>
+    <p>
+      <strong>Claude Code</strong> や <strong>Codex</strong> のような
+      「AIコーディングエージェント」と呼ばれる道具を用意して、下の文をそのまま貼り付けてください。
+      ソースの入手（初回）も更新（2回目以降）も、AIが全部やってくれます。
+    </p>
+
+    <div class="prompt-block">
+      <div class="prompt-head">
+        <span class="prompt-title">ソースを用意してもらうプロンプト</span>
+        <button type="button" class="btn btn-mini js-copy" data-target="p-setup">コピーする</button>
+      </div>
+      <pre class="code" id="p-setup">「食品表示ラベルメーカー」というオープンソースのツールを、自分用に手直ししたいです。
+まず、ソースを手元に用意してください。
+
+- 置き場所: https://github.com/ai-kakekomi/food-label-maker
+- 手元にまだ無ければ、作業用フォルダに git clone してください
+- すでに手元にあれば、git pull で最新に更新してください（私が加えた変更は消さないでください）
+- 用意できたら中身をひととおり読んで、このツールが何をするものか、
+  チェックのルールがどのファイルに書いてあるかを、日本語でかんたんに教えてください
+- 最後に、ローカルサーバー（例: python3 -m http.server 8000）で開いて、
+  画面がちゃんと表示されることを確認してください</pre>
+    </div>
+
+    <p class="help">
+      AIコーディングエージェントの導入手順は道具によって違うので、公式の案内に沿って進めてください。
+      <a href="https://github.com/ai-kakekomi/food-label-maker" target="_blank" rel="noopener">GitHubのページ</a>
+      から「Code」→「Download ZIP」で手に入れても構いません。
+    </p>
+
+    <h3>手順2　やりたいことを日本語で頼む</h3>
+    <p>
+      専門用語は要りません。<strong>やりたいことをそのまま書けば通じます。</strong>
+      どのファイルを直せばよいかは、AIが自分で探します。
+    </p>
+
+    <div class="prompt-block">
+      <div class="prompt-head">
+        <span class="prompt-title">例：社内ルールを追加してもらう</span>
+        <button type="button" class="btn btn-mini js-copy" data-target="p-custom">コピーする</button>
+      </div>
+      <pre class="code" id="p-custom">このツールに、うちの会社の社内ルールを追加してください。
+読み込める形の社内ルールのファイルを作って、画面から読み込む方法も教えてください。
+
+- 保存方法の文言は「直射日光、高温多湿を避けて保存してください」に統一する
+- 「完全無添加」という言葉は使わない
+- 文字は法令の8ポイントではなく10ポイント以上にする
+- 版下は必ず2人で確認する（これは機械では判定せず、人が確認する項目にしてください）</pre>
+    </div>
 
     <div class="howto">
-      <h4>頼みかたの例（ルールまわり）</h4>
+      <h4>ほかの頼みかたの例</h4>
       <ul>
-        <li>「このフォルダは食品表示のチェックツールです。<strong>期限の日付書式のルールのメッセージを、もっとやさしい言葉に変えて</strong>」</li>
-        <li>「<strong>すべてのルールの『最終確認日』に 2026/9/1 を入れて</strong>。監修が終わったので未監修バッジを外したい」</li>
-        <li>「法令が変わったので、<strong>アレルゲンのルールの根拠と出典URLを新しいものに直して</strong>」</li>
-        <li>「<strong>アレルゲンの品目に『カシューナッツバター』という書き方を追加して</strong>」</li>
-        <li>「<strong>『○○』というルールは、うちの商品には合わないので止めて</strong>」</li>
-        <li>「<strong>冷凍食品向けのチェック項目を追加して</strong>。凍結前加熱の有無を確認させたい」</li>
+        <li><strong>ルールの文言を変える</strong>：「期限の日付書式のルールのメッセージを、もっとやさしい言葉に変えて」</li>
+        <li><strong>監修が済んだ印を付ける</strong>：「すべてのルールの『最終確認日』に 2026/9/1 を入れて。未監修バッジを外したい」</li>
+        <li><strong>法令改正に追いつく</strong>：「アレルゲンのルールの根拠と出典URLを新しいものに直して」</li>
+        <li><strong>チェックを増やす</strong>：「冷凍食品向けに、凍結前加熱の有無を確認させるチェックを追加して」</li>
+        <li><strong>チェックを止める</strong>：「『○○』というルールは、うちの商品には合わないので止めて」</li>
+        <li><strong>画面や機能を変える</strong>：「検証結果をExcelに貼れる形で書き出せるようにして」</li>
+        <li><strong>見た目を変える</strong>：「会社のロゴと色に合わせて、画面の見た目を変えて」</li>
+        <li><strong>入力を楽にする</strong>：「よく使う原材料を登録しておいて、選ぶだけで入力できるようにして」</li>
       </ul>
       <p class="help">
         うまくいかないときは、<strong>何がどう困っているかをそのまま伝える</strong>のがコツです。
@@ -666,168 +671,57 @@
       </p>
     </div>
 
-    <p class="callout callout-warn">
-      <strong>失敗しても大丈夫です。</strong>
-      おかしくなったら、ZIPをもう一度展開すれば元に戻せます
-      （<code>git</code> を使っている方は、変更を取り消せば戻ります）。
-      本番で使うファイルとは別に、コピーを取って試すとさらに安心です。
-    </p>
-
-    <h3>ルールには何が書いてあるか</h3>
-    <p>
-      頼みかたを考えるときの参考に、1本のルールが持っている項目を挙げておきます。
-      <strong>中身を自分で書く必要はありません。</strong>「何を変えてほしいか」を伝えるための地図だと思ってください。
-    </p>
-    <table class="manual-table">
-      <thead><tr><th>項目</th><th>内容</th></tr></thead>
-      <tbody>
-        <tr><td>名称</td><td>画面に出るルールの名前</td></tr>
-        <tr><td>根拠・出典URL</td><td>何の条文にもとづくか、消費者庁のどのページか</td></tr>
-        <tr><td>最終確認日</td><td>一次情報と突き合わせて確認した日。空欄だと「未監修」と表示されます</td></tr>
-        <tr><td>条件・判定</td><td>どんなときに適用され、何を見るか</td></tr>
-        <tr><td>重大度</td><td>エラー（要修正）か、注意（確認推奨）か</td></tr>
-        <tr><td>メッセージ・ヒント</td><td>指摘されたときに画面に出る文章</td></tr>
-        <tr><td>機械判定</td><td>機械が何をどう見るかの指定（人の確認にすることもできます）</td></tr>
-      </tbody>
-    </table>
-    <p class="help">
-      ルールの一覧は、<a href="rules.html">ルール一覧の画面</a>ですべて読めます。
-      直したいルールが見つかったら、その名前をAIに伝えるのがいちばん早いです。
-    </p>
-  </section>
-
-  <!-- ============ 8 ============ -->
-  <section class="card" id="custom">
-    <h2>8. 社内ルールを追加する</h2>
-    <p>
-      法令のルールとは別に、自社の社内規程や慣行をチェック項目として追加できます。
-      追加したルールは画面上で <span class="badge badge-custom">社内ルール</span> のバッジが付き、
-      法令のルールとはっきり区別されます。
-    </p>
-
-    <ol class="steps steps-compact">
+    <h3>手順3　画面で確かめる／元に戻す</h3>
+    <ul>
       <li>
-        <h3>AIに社内ルールのファイルを作ってもらう</h3>
-        <p>
-          <a href="#ask-ai">7章のやり方</a>と同じです。ソースのフォルダをAIエージェントに渡して、
-          <strong>社内ルールを日本語で説明するだけ</strong>で、読み込める形のファイルを作ってくれます。
-          <code>rules/custom/</code> フォルダにテンプレートが入っているので、AIはそれを参考にします。
-        </p>
-        <div class="howto">
-          <h4>頼みかたの例</h4>
-          <pre class="code">このフォルダは食品表示のチェックツールです。
-次の社内ルールをチェックできるように、社内ルールのファイルを作ってください。
-
-・保存方法の文言は「直射日光、高温多湿を避けて保存してください」に統一する
-・「完全無添加」という言葉は使わない
-・文字は法令の8ポイントではなく10ポイント以上にする
-・版下は必ず2人で確認する（これは人が確認する項目にしてください）</pre>
-        </div>
+        ブラウザで再読み込み（<kbd>Ctrl</kbd>＋<kbd>F5</kbd>）して、
+        <a href="rules.html">ルール一覧の画面</a>や
+        <a href="index.html">ラベル作成の画面</a>に反映されているか見ます。
+        「動かして確認して」と頼めば、AIが確認まで済ませてくれます。
       </li>
       <li>
-        <h3>画面から読み込む</h3>
-        <p>
-          ラベル作成の画面の「9. 社内ルールの読み込み」で、作ってもらったファイルを選びます。
-          すぐにチェックに反映されます。
-          読み込みエラーが出たら、<strong>そのままAIに「エラーが出た」と伝えれば直してくれます。</strong>
-        </p>
+        社内ルールのファイルを作ってもらった場合は、ラベル作成の画面の
+        「9. 社内ルールの読み込み」で、そのファイルを選ぶだけです。
+        エラーが出たら、<strong>そのままAIに「エラーが出た」と伝えれば直してくれます。</strong>
       </li>
-    </ol>
+      <li>
+        <strong>失敗しても大丈夫です。</strong>
+        おかしくなったら「さっきの変更を全部取り消して」と頼めば元に戻ります
+        （ZIPで手に入れた場合は、展開し直せば戻ります）。
+      </li>
+    </ul>
 
-    <h3>社内ルールで使えるチェックの種類</h3>
-    <p class="help">
-      AIに頼むときに「こういうチェックはできる？」の目安になります。指定のしかたはAIが判断します。
-    </p>
-    <table class="manual-table">
-      <thead><tr><th>できること</th><th>使いどころの例</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>指定した欄が<strong>空でない</strong>ことを確認する</td>
-          <td>「原料原産地名は必ず書く」という社内方針</td>
-        </tr>
-        <tr>
-          <td>指定した欄に、<strong>決まった言葉が入っている</strong>ことを確認する</td>
-          <td>保存方法の文言を社内で統一する</td>
-        </tr>
-        <tr>
-          <td>指定した欄に、<strong>決まった言葉が入っていない</strong>ことを確認する</td>
-          <td>「完全無添加」など社内の使用禁止ワード</td>
-        </tr>
-        <tr>
-          <td>数値が<strong>決めた値以上</strong>であることを確認する</td>
-          <td>「文字は法令の8ptより大きく10pt以上にする」という社内基準</td>
-        </tr>
-        <tr>
-          <td><strong>自動判定はせず</strong>、人が確認するチェックリストに出す</td>
-          <td>「版下は2名でダブルチェックする」という手順</td>
-        </tr>
-      </tbody>
-    </table>
     <p class="callout">
-      社内ルールのファイルも<strong>この端末の外には出ません。</strong>
+      社内ルールのファイルも、入力した内容も<strong>この端末の外には出ません。</strong>
       配合や社内規程が外部に送信されることはありません。
     </p>
-  </section>
 
-  <!-- ============ 9 ============ -->
-  <section class="card" id="improve">
-    <h2>9. もっとこうしたい、と思ったら</h2>
-
-    <p class="callout">
-      <strong>このツールは、コピーも、改造も、配り直すのも自由です。</strong>
-      そして今は、プログラミングの経験がなくても、<strong>AIに日本語で頼んで自分で直せる時代</strong>になりました。
-      「もっとこうしたい」と思ったら、開発者に頼むだけでなく、<strong>自分で直すという選択肢</strong>があります。
-    </p>
-
-    <p>
-      やり方は<a href="#ask-ai">7章</a>とまったく同じです。
-      ソースをダウンロードして、フォルダごとAIエージェントに渡して、日本語で頼むだけ。
-      ルールだけでなく、<strong>画面の見た目や入力項目、機能そのもの</strong>も同じやり方で変えられます。
-    </p>
-
-    <div class="howto">
-      <h4>頼みかたの例（ツール本体）</h4>
-      <ul>
-        <li>「原材料の入力欄に、1行ずつ貼り付けてまとめて登録できるボタンを付けて」</li>
-        <li>「ラベル案の文字をもっと大きくして、印刷したときに読みやすくして」</li>
-        <li>「検証結果をExcelに貼れる形で書き出せるようにして」</li>
-        <li>「会社のロゴと色に合わせて、画面の見た目を変えて」</li>
-        <li>「よく使う原材料を登録しておいて、選ぶだけで入力できるようにして」</li>
-      </ul>
-    </div>
-
-    <h3>ライセンスについて</h3>
+    <h3>ライセンスと、改造版の公開について</h3>
     <p>
       このツールはオープンソースで、<strong>MITライセンス</strong>で公開しています。
       商用利用を含めて自由に使え、改造したものを公開・販売することもできます。
       お願いしているのは<strong>著作権表示とライセンス文（同梱の <code>LICENSE</code>）を残すこと</strong>だけです。
     </p>
+    <p class="callout">
+      <strong>改造したものを公開・共有していただくのも大歓迎です。</strong>
+      本家に取り込めそうな改善は、GitHubのIssueやPull Requestでお待ちしています。
+      うまくいかなかったら気軽にご相談ください
+      （<a href="mailto:info@ai-kakekomi.com">info@ai-kakekomi.com</a>）。
+    </p>
     <p>
       <a href="https://github.com/ai-kakekomi/food-label-maker" target="_blank" rel="noopener"
          class="btn btn-primary inline-btn">GitHubでソースコードを見る</a>
     </p>
-
-    <p class="callout">
-      <strong>改造したものを公開・共有していただくのも大歓迎です。</strong>
-      「こんな風に直した」を教えていただけたら、とても嬉しいです。
-      本家に取り込めそうな改善は、GitHubのIssueやPull Requestでお待ちしています。
-    </p>
-
-    <p>
-      やってみて、うまくいかなかったら気軽にご相談ください
-      （<a href="mailto:info@ai-kakekomi.com">info@ai-kakekomi.com</a>）。
-      わたしたちAIかけこみ寺は、<strong>AIの使い方を学べる無料のAI教室</strong>を各地で開いています
-      （<a href="https://ai-kakekomi.com" target="_blank" rel="noopener">ai-kakekomi.com</a>）。
-      よろしければのぞいてみてください。
-    </p>
     <p class="help">
+      わたしたちAIかけこみ寺は、AIの使い方を学べる<strong>無料のAI教室</strong>を各地で開いています
+      （<a href="https://ai-kakekomi.com" target="_blank" rel="noopener">ai-kakekomi.com</a>）。
       AIの恩恵をすべての人へ。このツールが、その入り口のひとつになればと思って公開しています。
     </p>
   </section>
 
-  <!-- ============ 10 ============ -->
+  <!-- ============ 8 ============ -->
   <section class="card" id="faq">
-    <h2>10. 困ったときは</h2>
+    <h2>8. 困ったときは</h2>
     <dl class="def">
       <dt>画面に「ルールファイルを読み込めませんでした」と出る</dt>
       <dd>
@@ -867,9 +761,9 @@
     </dl>
   </section>
 
-  <!-- ============ 11 ============ -->
+  <!-- ============ 9 ============ -->
   <section class="card" id="disclaimer">
-    <h2>11. 免責事項</h2>
+    <h2>9. 免責事項</h2>
     <p class="callout callout-warn">
       <strong>本ツールは参考情報です。表示内容の最終確認は必ず食品表示基準および
       消費者庁の最新ガイドラインで行ってください。</strong>
@@ -908,5 +802,33 @@
   </div>
 </footer>
 
+<script>
+/* プロンプトのワンクリックコピー */
+(function () {
+  'use strict';
+  function 伝える(btn, 文言) {
+    var 元 = btn.getAttribute('data-label') || btn.textContent;
+    btn.setAttribute('data-label', 元);
+    btn.textContent = 文言;
+    setTimeout(function () { btn.textContent = 元; }, 1800);
+  }
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target.closest ? ev.target.closest('.js-copy') : null;
+    if (!btn) return;
+    var el = document.getElementById(btn.getAttribute('data-target'));
+    if (!el) return;
+    var text = el.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        伝える(btn, 'コピーしました');
+      }, function () {
+        window.prompt('下の文を選択してコピーしてください', text);
+      });
+    } else {
+      window.prompt('下の文を選択してコピーしてください', text);
+    }
+  });
+})();
+</script>
 </body>
 </html>
