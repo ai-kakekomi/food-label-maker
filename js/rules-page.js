@@ -6,6 +6,13 @@
 
   var 全ルール = [];
 
+  /* 画面に出す重大度の表記（内部の値は 'error' / 'warn' のまま） */
+  var 重大度ラベル = {
+    error: 'エラー（要修正）',
+    warn: '注意（確認推奨）'
+  };
+  function 重大度表記(sev) { return 重大度ラベル[sev] || sev; }
+
   function $(id) { return document.getElementById(id); }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -68,8 +75,8 @@
     var 監修済 = 全ルール.filter(function (r) { return !!r.最終確認日; }).length;
     $('stats').innerHTML =
       '<span class="pill pill-pass">全 ' + 全ルール.length + ' 本</span>' +
-      '<span class="pill pill-error">error ' + 全ルール.filter(function (r) { return r.重大度 === 'error'; }).length + '</span>' +
-      '<span class="pill pill-warn">warn ' + 全ルール.filter(function (r) { return r.重大度 === 'warn'; }).length + '</span>' +
+      '<span class="pill pill-error">エラー（要修正） ' + 全ルール.filter(function (r) { return r.重大度 === 'error'; }).length + '</span>' +
+      '<span class="pill pill-warn">注意（確認推奨） ' + 全ルール.filter(function (r) { return r.重大度 === 'warn'; }).length + '</span>' +
       '<span class="pill pill-check">機械判定 ' + 自動 + ' ／ 人の確認 ' + (全ルール.length - 自動) + '</span>' +
       '<span class="pill ' + (監修済 ? 'pill-pass' : 'pill-warn') + '">監修済 ' + 監修済 + ' ／ 未監修 ' + (全ルール.length - 監修済) + '</span>' +
       '<span class="pill">表示中 ' + list.length + '</span>';
@@ -90,7 +97,7 @@
     var 自動 = 機械が判定するか(r);
     var h = '<details class="rule-card">';
     h += '<summary>';
-    h += '<span class="badge badge-' + r.重大度 + '">' + r.重大度 + '</span>';
+    h += '<span class="badge badge-' + r.重大度 + '">' + esc(重大度表記(r.重大度)) + '</span>';
     h += '<span class="res-title">' + esc(r.名称) + '</span>';
     h += '<span class="badge ' + (自動 ? 'badge-auto' : 'badge-manual') + '">' + (自動 ? '機械判定' : '人の確認') + '</span>';
     if (!r.最終確認日) h += '<span class="badge badge-unreviewed">未監修</span>';

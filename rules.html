@@ -24,12 +24,10 @@
 
 <div class="wrap notice-bar">
   <p>
-    ルールは <code>rules/base/</code> のYAMLファイルに日本語で書かれています。
-    <strong>プログラムを書き換えなくても、YAMLファイルを直せばルールを直せます。</strong>
+    チェックのルールは、プログラムの中ではなく<strong>日本語で書かれたファイル</strong>にまとまっています。
     法令の一次情報と突き合わせて確認し、確認できたルールには「最終確認日」を記入してください。<br>
-    書き方を覚える必要はありません。<strong>ファイルの中身をチャットAI（ChatGPT・Claudeなど）に貼り付けて、
-    日本語で「ここをこう変えて」と頼むのがいちばん簡単です。</strong>
-    手順は <a href="manual.html#ask-ai">使い方マニュアルの「AIに頼む」</a> を参照してください。
+    <strong>ルールの追加や修正は、フォルダごとAIエージェント（Claude Code など）に渡して日本語で頼むだけでできます。</strong>
+    手順は <a href="manual.html#ask-ai">使い方マニュアルの「ルールやチェック内容を変えたい」</a> を参照してください。
   </p>
 </div>
 
@@ -48,8 +46,8 @@
         <span class="field-label">重大度</span>
         <select id="sev">
           <option value="">すべて</option>
-          <option value="error">error（法令違反のおそれ）</option>
-          <option value="warn">warn（推奨・慣行）</option>
+          <option value="error">エラー（要修正）</option>
+          <option value="warn">注意（確認推奨）</option>
         </select>
       </label>
       <label class="field inline">
