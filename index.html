@@ -291,6 +291,20 @@
               <input type="text" id="f-nutri-carb" inputmode="decimal" placeholder="例：60.1">
             </label>
           </div>
+          <div class="convert-box" id="wrap-nutri-energy-calc" hidden>
+            <p class="convert-title">たんぱく質・脂質・炭水化物から熱量を計算する</p>
+            <div class="convert-row">
+              <button type="button" class="btn" id="btn-energy-calc">計算値：－kcal を入れる</button>
+            </div>
+            <p class="help">
+              計算式：熱量(kcal) ＝ たんぱく質(g)×4 ＋ 脂質(g)×9 ＋ 炭水化物(g)×4（四捨五入して整数）。
+              これはエネルギー換算係数（Atwater係数）による<strong>目安</strong>です。
+              計算で求めた値を使う場合は、「値の求め方」を「計算などで求めた値」にして、
+              「推定値」などの文言を併記してください（消費者庁「栄養成分表示ガイドライン」）。
+              食物繊維や糖アルコールが多い食品では、実際の熱量と差が出ることがあります。
+            </p>
+          </div>
+
           <label class="field">
             <span class="field-label">食塩相当量（g） <em class="req">必須</em></span>
             <input type="text" id="f-nutri-salt" inputmode="decimal" placeholder="例：0.5">

@@ -162,6 +162,13 @@
     $('wrap-nutri-serving').hidden = n.食品単位 !== '1食分';
     $('wrap-nutri-na').hidden = !n.ナトリウム併記;
     $('wrap-nutri-estimate').hidden = n.値の性格 !== '推定値';
+
+    /* 3項目が数値でそろっているときだけ、熱量の計算ボタンを出す */
+    var kcal = LabelEngine.熱量を計算(n.たんぱく質, n.脂質, n.炭水化物);
+    $('wrap-nutri-energy-calc').hidden = kcal === null;
+    if (kcal !== null) {
+      $('btn-energy-calc').textContent = '計算値：' + kcal + 'kcal を入れる';
+    }
   }
 
   function 行を描画(containerId, list, 種別) {
@@ -358,6 +365,20 @@
       $('f-nutri-salt').value = String(g);
       保存(); ラベル更新();
       トースト('食塩相当量 ' + g + 'g を入れました（' + mg + 'mg × 2.54 ÷ 1000）');
+    });
+
+    /* たんぱく質・脂質・炭水化物 → 熱量(kcal) の計算補助（押したときだけ入れる） */
+    $('btn-energy-calc').addEventListener('click', function () {
+      var n = state.栄養成分;
+      var kcal = LabelEngine.熱量を計算(n.たんぱく質, n.脂質, n.炭水化物);
+      if (kcal === null) {
+        トースト('たんぱく質・脂質・炭水化物を数値で入力してください');
+        return;
+      }
+      state.栄養成分.熱量 = String(kcal);
+      $('f-nutri-energy').value = String(kcal);
+      保存(); ラベル更新();
+      トースト('熱量 ' + kcal + 'kcal を入れました（目安の計算値です。「推定値」の併記をご確認ください）');
     });
 
     document.querySelectorAll('input[name="allergen-mode"]').forEach(function (el) {

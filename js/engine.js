@@ -51,6 +51,15 @@
     return Math.round(n * 2.54 / 1000 * 100) / 100;
   }
 
+  /* エネルギー換算係数（Atwater係数）による熱量の目安 */
+  function 熱量を計算(たんぱく質g, 脂質g, 炭水化物g) {
+    var p = parseFloat(たんぱく質g);
+    var f = parseFloat(脂質g);
+    var c = parseFloat(炭水化物g);
+    if (isNaN(p) || isNaN(f) || isNaN(c)) return null;
+    return Math.round(p * 4 + f * 9 + c * 4);
+  }
+
   var FIELD_GETTERS = {
     '名称': function (i) { return i.名称; },
     '原材料一覧': function (i) { return (i.原材料 || []).filter(function (x) { return (x.表示名 || '').trim(); }); },
@@ -503,6 +512,7 @@
     展開: 展開,
     栄養成分項目: 栄養成分項目,
     食塩相当量に換算: 食塩相当量に換算,
+    熱量を計算: 熱量を計算,
     判定種別一覧: Object.keys(CHECKS)
   };
 })(window);
