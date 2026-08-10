@@ -25,6 +25,32 @@
     ].filter(Boolean).join('\n');
   }
 
+  /* ---------- 栄養成分 ---------- */
+
+  /* 別記様式2の並び順。上から順に表示します。
+     任意表示の成分（ビタミン等）を将来足すときは、この配列に
+     { キー: '飽和脂肪酸', 単位: 'g', 義務: false } のように加えます。 */
+  var 栄養成分項目 = [
+    { キー: '熱量', 単位: 'kcal', 義務: true },
+    { キー: 'たんぱく質', 単位: 'g', 義務: true },
+    { キー: '脂質', 単位: 'g', 義務: true },
+    { キー: '炭水化物', 単位: 'g', 義務: true },
+    { キー: '食塩相当量', 単位: 'g', 義務: true }
+  ];
+
+  function 栄養(input) { return input.栄養成分 || {}; }
+
+  /* 「12」「0.5」「20〜25」のような書き方を数値とみなす */
+  var 数値パターン = /^\s*\d+(\.\d+)?\s*([~〜\-－ー]\s*\d+(\.\d+)?\s*)?$/;
+  function 数値として読めるか(v) { return 数値パターン.test(String(v)); }
+
+  /* ナトリウム(mg) から食塩相当量(g) を求める（小数第2位まで） */
+  function 食塩相当量に換算(ナトリウムmg) {
+    var n = parseFloat(ナトリウムmg);
+    if (isNaN(n)) return null;
+    return Math.round(n * 2.54 / 1000 * 100) / 100;
+  }
+
   var FIELD_GETTERS = {
     '名称': function (i) { return i.名称; },
     '原材料一覧': function (i) { return (i.原材料 || []).filter(function (x) { return (x.表示名 || '').trim(); }); },
@@ -48,6 +74,12 @@
     'アレルゲン一括文': function (i) { return i.アレルゲン一括文; },
     '注意喚起': function (i) { return i.注意喚起; },
     '輸入品': function (i) { return !!i.輸入品; },
+    '栄養成分.省略': function (i) { return !!栄養(i).省略; },
+    '栄養成分.食品単位': function (i) { return 栄養(i).食品単位; },
+    '栄養成分.一食分の量': function (i) { return 栄養(i).一食分の量; },
+    '栄養成分.値の性格': function (i) { return 栄養(i).値の性格; },
+    '栄養成分.推定値文言': function (i) { return 栄養(i).推定値文言; },
+    '栄養成分.ナトリウム': function (i) { return 栄養(i).ナトリウム; },
     '全文': 全文
   };
 
@@ -349,6 +381,78 @@
     return out.length ? out : [pass(rule)];
   };
 
+  /* ---------- 栄養成分の判定 ---------- */
+
+  /* 義務5項目のうち、値が空のものを指摘する */
+  CHECKS['栄養成分5項目'] = function (rule, input) {
+    var n = 栄養(input);
+    var out = [];
+    栄養成分項目.forEach(function (item) {
+      if (!item.義務) return;
+      if (isEmpty(n[item.キー])) out.push(fail(rule, { 項目: item.キー }));
+    });
+    return out.length ? out : [pass(rule)];
+  };
+
+  /* 別記様式2の並び順どおりか（ルールを書き換えて項目を増やしたときの安全装置） */
+  CHECKS['栄養成分順序'] = function (rule, input) {
+    var n = 栄養(input);
+    var 正しい順 = 栄養成分項目.map(function (x) { return x.キー; });
+    var 入力順 = Object.keys(n).filter(function (k) { return 正しい順.indexOf(k) >= 0; });
+    var 期待 = 正しい順.filter(function (k) { return 入力順.indexOf(k) >= 0; });
+    if (入力順.join('>') === 期待.join('>')) return [pass(rule)];
+    return [fail(rule, { 該当: 入力順.join('→') })];
+  };
+
+  /* 値が数値（または下限値・上限値）として読めるか */
+  CHECKS['栄養成分数値'] = function (rule, input) {
+    var n = 栄養(input);
+    var out = [];
+    栄養成分項目.forEach(function (item) {
+      var v = n[item.キー];
+      if (isEmpty(v)) return;   // 空欄は 栄養成分5項目 が担当する
+      if (!数値として読めるか(v)) out.push(fail(rule, { 項目: item.キー, 該当: String(v) }));
+    });
+    return out.length ? out : [pass(rule)];
+  };
+
+  /* 何あたりの量かの表示（食品単位）。1食分なら目安量の併記が必要 */
+  CHECKS['栄養成分食品単位'] = function (rule, input) {
+    var n = 栄養(input);
+    var 単位 = String(n.食品単位 || '').trim();
+    if (!単位) {
+      return [fail(rule, { 該当: '何あたりの量か（100g当たり・100ml当たり・1食分当たり）が選ばれていません。栄養成分表示には食品単位を必ず書きます。' })];
+    }
+    if (単位 === '1食分' && isEmpty(n.一食分の量)) {
+      return [fail(rule, { 該当: '「1食分当たり」で表示する場合は、1食分が何グラム（何ミリリットル）かを併記しなければなりません。目安量を入力してください。' })];
+    }
+    return [pass(rule)];
+  };
+
+  /* ナトリウムの量を併記する場合の要件 */
+  CHECKS['栄養成分ナトリウム併記'] = function (rule, input) {
+    var n = 栄養(input);
+    if (!n.ナトリウム併記) return [];
+    var out = [];
+    if (!n.ナトリウム塩無添加) {
+      out.push(fail(rule, { 該当: 'ナトリウムの量を併記できるのは、ナトリウム塩を添加していない食品の場合だけです。添加していない場合は、その旨のチェックを入れてください。' }));
+    }
+    if (isEmpty(n.食塩相当量)) {
+      out.push(fail(rule, { 該当: 'ナトリウムの量を併記する場合でも、食塩相当量の表示は必要です。「ナトリウム○mg（食塩相当量○g）」のように括弧書きで併記します。' }));
+    }
+    if (isEmpty(n.ナトリウム)) {
+      out.push(fail(rule, { 該当: 'ナトリウムの量を併記する設定ですが、ナトリウムの値が空欄です。' }));
+    }
+    return out.length ? out : [pass(rule)];
+  };
+
+  /* 推定値で表示する場合の併記文言 */
+  CHECKS['栄養成分推定値文言'] = function (rule, input) {
+    var n = 栄養(input);
+    if (n.値の性格 !== '推定値') return [];
+    return isEmpty(n.推定値文言) ? [fail(rule)] : [pass(rule)];
+  };
+
   CHECKS['確認事項'] = function (rule, input, ctx) {
     var 済 = (input.確認済み || {})[rule.id] === true;
     return [{ 結果: 済 ? 'pass' : 'check', rule: rule, 変数: {} }];
@@ -397,6 +501,8 @@
     含有アレルゲン一覧: 含有アレルゲン一覧,
     全文: 全文,
     展開: 展開,
+    栄養成分項目: 栄養成分項目,
+    食塩相当量に換算: 食塩相当量に換算,
     判定種別一覧: Object.keys(CHECKS)
   };
 })(window);

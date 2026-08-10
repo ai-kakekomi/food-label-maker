@@ -282,6 +282,19 @@ input:focus, select:focus, textarea:focus {
 .msg-error { background: var(--error-bg); border: 1px solid #e7b4b0; }
 .msg p { margin: .3rem 0; }
 
+/* ---------- ナトリウム換算の補助 ---------- */
+
+.convert-box {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafbfc;
+  padding: .7rem .8rem;
+  margin: .6rem 0 .8rem;
+}
+.convert-title { margin: 0 0 .4rem; font-weight: 700; font-size: .95rem; }
+.convert-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: flex-end; }
+.convert-row .field.inline { margin: 0; min-width: 180px; }
+
 .custom-status { margin: .6rem 0 0; font-size: .93rem; }
 .custom-status.ok { color: var(--pass); font-weight: 700; }
 .custom-status.ng { color: var(--error); font-weight: 700; }
@@ -316,6 +329,14 @@ input:focus, select:focus, textarea:focus {
   width: 1%;
   background: #fff;
   letter-spacing: .3em;
+}
+.label-nutrition { margin-top: .8em; }
+.label-nutrition .nutrition-head {
+  white-space: normal;
+  width: auto;
+  letter-spacing: normal;
+  font-weight: 700;
+  text-align: left;
 }
 .label-note {
   max-width: 520px; font-size: var(--label-font-size);
