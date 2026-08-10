@@ -237,6 +237,21 @@ function id全部(results) { return results.map(function (r) { return r.rule.id;
       '「' + v + '」で記載場所の確認項目を出す');
   });
 
+/* 記載場所は具体的でなければならない（「枠外に記載」だけでは不十分） */
+['枠外に記載', '欄外に記載', '別途記載'].forEach(function (v) {
+  var 曖昧 = 素材({ 期限: { 種別: '賞味期限', 日付: v, 期間区分: '3か月以内' } });
+  var r = 検証(曖昧);
+  ok(idで(r, 'warn').indexOf('date-location-must-be-specific') >= 0,
+    '「' + v + '」は具体的な記載箇所を書くよう warn を出す');
+  ok(idで(r, 'error').indexOf('date-format-within-3months') < 0,
+    '「' + v + '」は書式エラーにはしない');
+});
+['この面の右側に記載', '枠外上部に記載', '箱の底面に記載', 'キャップに記載'].forEach(function (v) {
+  var 具体 = 素材({ 期限: { 種別: '賞味期限', 日付: v, 期間区分: '3か月以内' } });
+  ok(idで(検証(具体), 'warn').indexOf('date-location-must-be-specific') < 0,
+    '「' + v + '」は具体的な記載箇所なので warn を出さない');
+});
+
 /* 日付そのものを書いたときは、記載場所の確認項目は出さない */
 ok(id全部(検証(素材({ 期限: { 種別: '賞味期限', 日付: '2027.03.31', 期間区分: '3か月以内' } })))
   .indexOf('date-location-outside-frame') < 0, '日付を書いたときは枠外表示の確認項目を出さない');
