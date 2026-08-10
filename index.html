@@ -223,8 +223,10 @@
       <fieldset class="card">
         <legend>9. 社内ルールの読み込み（任意）</legend>
         <p class="help">
-          自社の社内ルールをYAMLファイルで追加できます。書き方は
-          <code>rules/custom/sample.yaml</code> を参考にしてください。
+          自社の社内ルールを書いたファイルを読み込むと、法令のルールに追加してチェックできます。
+          ファイルは <code>rules/custom/</code> フォルダに入っています。
+          作り方は <a href="manual.html#custom">使い方マニュアルの「社内ルールを追加する」</a>
+          をご覧ください（AIに頼んで作ってもらえます）。
           読み込んだファイルもこの端末の外には出ません。
         </p>
         <input type="file" id="f-custom" accept=".yaml,.yml">
@@ -252,7 +254,7 @@
       <p class="label-meta" id="label-meta"></p>
     </div>
 
-    <div class="card">
+    <div class="card sticky">
       <div class="card-scroll-head">
         <div class="result-head">
           <h2>検証結果</h2>
