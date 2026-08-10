@@ -229,7 +229,129 @@
       </fieldset>
 
       <fieldset class="card">
-        <legend>9. 社内ルールの読み込み（任意）</legend>
+        <legend>9. 栄養成分表示</legend>
+        <p class="help">
+          熱量・たんぱく質・脂質・炭水化物・食塩相当量の5項目は、一括表示とは<strong>別の枠</strong>
+          （別記様式2）で表示します。値は<strong>数値だけ</strong>を入れてください。単位は自動で付きます。
+        </p>
+
+        <label class="checkbox">
+          <input type="checkbox" id="f-nutri-omit"> 栄養成分表示を省略する
+        </label>
+
+        <label class="field" id="wrap-nutri-omit-reason" hidden>
+          <span class="field-label">省略する理由</span>
+          <select id="f-nutri-omit-reason">
+            <option value="">（選んでください）</option>
+            <option value="小規模の事業者">小規模の事業者（消費税の免税事業者、または中小企業基本法の小規模企業者）</option>
+            <option value="表示可能面積30cm2以下">容器包装の表示可能面積がおおむね30平方センチメートル以下</option>
+            <option value="酒類">酒類</option>
+            <option value="寄与の程度が小さい">栄養の供給源としての寄与の程度が小さいもの</option>
+            <option value="原材料が短期間で変わる">極めて短い期間で原材料（配合割合を含む）が変更されるもの</option>
+            <option value="製造加工場所での販売">食品を製造・加工した場所での販売</option>
+            <option value="販売以外の譲渡">不特定または多数の者への譲渡（販売を除く）</option>
+          </select>
+          <span class="help">「カロリーひかえめ」などの栄養強調表示をする場合は省略できません。</span>
+        </label>
+
+        <div id="wrap-nutrition">
+          <div class="grid-2">
+            <label class="field">
+              <span class="field-label">何あたりの量か（食品単位） <em class="req">必須</em></span>
+              <select id="f-nutri-unit">
+                <option value="100g">100g当たり</option>
+                <option value="100ml">100ml当たり</option>
+                <option value="1食分">1食分当たり</option>
+              </select>
+            </label>
+            <label class="field" id="wrap-nutri-serving" hidden>
+              <span class="field-label">1食分の目安量 <em class="req">必須</em></span>
+              <input type="text" id="f-nutri-serving" placeholder="例：50g／1個（25g）">
+              <span class="help">1食分で表示する場合は、1食分が何グラムかの併記が必要です。</span>
+            </label>
+          </div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span class="field-label">熱量（kcal） <em class="req">必須</em></span>
+              <input type="text" id="f-nutri-energy" inputmode="decimal" placeholder="例：480">
+            </label>
+            <label class="field">
+              <span class="field-label">たんぱく質（g） <em class="req">必須</em></span>
+              <input type="text" id="f-nutri-protein" inputmode="decimal" placeholder="例：6.2">
+            </label>
+          </div>
+          <div class="grid-2">
+            <label class="field">
+              <span class="field-label">脂質（g） <em class="req">必須</em></span>
+              <input type="text" id="f-nutri-fat" inputmode="decimal" placeholder="例：24.5">
+            </label>
+            <label class="field">
+              <span class="field-label">炭水化物（g） <em class="req">必須</em></span>
+              <input type="text" id="f-nutri-carb" inputmode="decimal" placeholder="例：60.1">
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">食塩相当量（g） <em class="req">必須</em></span>
+            <input type="text" id="f-nutri-salt" inputmode="decimal" placeholder="例：0.5">
+            <span class="help">
+              ナトリウムの値しか分からないときは、下の換算をお使いください。
+              「ナトリウム」だけの表示は認められていません。
+            </span>
+          </label>
+
+          <div class="convert-box">
+            <p class="convert-title">ナトリウムから食塩相当量を計算する</p>
+            <div class="convert-row">
+              <label class="field inline">
+                <span class="field-label">ナトリウム（mg）</span>
+                <input type="text" id="f-nutri-na-input" inputmode="decimal" placeholder="例：200">
+              </label>
+              <button type="button" class="btn" id="btn-na-convert">食塩相当量に換算して入れる</button>
+            </div>
+            <p class="help">計算式：食塩相当量(g) ＝ ナトリウム(mg) × 2.54 ÷ 1000</p>
+          </div>
+
+          <label class="checkbox">
+            <input type="checkbox" id="f-nutri-na-show"> ナトリウムの量も併記する
+          </label>
+          <div id="wrap-nutri-na" hidden>
+            <label class="checkbox">
+              <input type="checkbox" id="f-nutri-na-free"> この食品はナトリウム塩を添加していない
+            </label>
+            <label class="field">
+              <span class="field-label">ナトリウム（mg）</span>
+              <input type="text" id="f-nutri-na" inputmode="decimal" placeholder="例：200">
+              <span class="help">
+                ナトリウムの量を書けるのは、ナトリウム塩を添加していない食品だけです。
+                その場合も食塩相当量を括弧書きで併記します。
+              </span>
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field-label">値の求め方</span>
+            <select id="f-nutri-kind">
+              <option value="分析値">分析して求めた値（許容差の範囲内にある値）</option>
+              <option value="推定値">計算などで求めた値（合理的な推定により得られた値）</option>
+            </select>
+          </label>
+          <label class="field" id="wrap-nutri-estimate" hidden>
+            <span class="field-label">併記する文言 <em class="req">必須</em></span>
+            <select id="f-nutri-estimate">
+              <option value="">（選んでください）</option>
+              <option value="推定値">推定値</option>
+              <option value="この表示値は、目安です。">この表示値は、目安です。</option>
+            </select>
+            <span class="help">
+              計算などで求めた値を表示する場合は、このどちらかを栄養成分表示のそばに書きます。
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>10. 社内ルールの読み込み（任意）</legend>
         <p class="help">
           <strong>AIに作ってもらった社内ルールのファイルを選んでください。</strong>
           法令のルールに追加してチェックします。頼み方は

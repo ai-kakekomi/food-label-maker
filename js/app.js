@@ -32,7 +32,28 @@
       文字サイズ: 8,
       表示可能面積: 300,
       注意喚起: '',
+      栄養成分: 栄養成分の初期値(),
       確認済み: {}
+    };
+  }
+
+  /* 栄養成分（別記様式2）。項目の順序は法令で決まっているので、この並びを変えないこと。 */
+  function 栄養成分の初期値() {
+    return {
+      省略: false,
+      省略理由: '',
+      食品単位: '100g',
+      一食分の量: '',
+      熱量: '',
+      たんぱく質: '',
+      脂質: '',
+      炭水化物: '',
+      食塩相当量: '',
+      ナトリウム併記: false,
+      ナトリウム塩無添加: false,
+      ナトリウム: '',
+      値の性格: '分析値',
+      推定値文言: ''
     };
   }
 
@@ -73,6 +94,7 @@
         state = Object.assign(初期値(), o);
         state.期限 = Object.assign({ 種別: '賞味期限', 日付: '', 期間区分: '3か月以内' }, o.期限 || {});
         state.事業者 = Object.assign({ 区分: '製造者', 名称: '', 住所: '' }, o.事業者 || {});
+        state.栄養成分 = Object.assign(栄養成分の初期値(), o.栄養成分 || {});
         state.確認済み = o.確認済み || {};
       }
     } catch (e) { state = 初期値(); }
@@ -105,6 +127,24 @@
     $('f-font').value = state.文字サイズ;
     $('f-note').value = state.注意喚起 || '';
 
+    /* 項目の順序を法令どおりに保つため、毎回ひな形に載せ替える */
+    state.栄養成分 = Object.assign(栄養成分の初期値(), state.栄養成分 || {});
+    var n = state.栄養成分;
+    $('f-nutri-omit').checked = !!n.省略;
+    $('f-nutri-omit-reason').value = n.省略理由 || '';
+    $('f-nutri-unit').value = n.食品単位 || '100g';
+    $('f-nutri-serving').value = n.一食分の量 || '';
+    $('f-nutri-energy').value = n.熱量 || '';
+    $('f-nutri-protein').value = n.たんぱく質 || '';
+    $('f-nutri-fat').value = n.脂質 || '';
+    $('f-nutri-carb').value = n.炭水化物 || '';
+    $('f-nutri-salt').value = n.食塩相当量 || '';
+    $('f-nutri-na-show').checked = !!n.ナトリウム併記;
+    $('f-nutri-na-free').checked = !!n.ナトリウム塩無添加;
+    $('f-nutri-na').value = n.ナトリウム || '';
+    $('f-nutri-kind').value = n.値の性格 || '分析値';
+    $('f-nutri-estimate').value = n.推定値文言 || '';
+
     行を描画('ingredient-rows', state.原材料, '原材料');
     行を描画('additive-rows', state.添加物, '添加物');
     表示切替();
@@ -115,6 +155,13 @@
     $('wrap-ikkatsu').hidden = state.アレルゲン表示方式 !== '一括表示';
     $('wrap-country').hidden = !state.輸入品;
     $('wrap-origin').hidden = !!state.輸入品;
+
+    var n = state.栄養成分;
+    $('wrap-nutrition').hidden = !!n.省略;
+    $('wrap-nutri-omit-reason').hidden = !n.省略;
+    $('wrap-nutri-serving').hidden = n.食品単位 !== '1食分';
+    $('wrap-nutri-na').hidden = !n.ナトリウム併記;
+    $('wrap-nutri-estimate').hidden = n.値の性格 !== '推定値';
   }
 
   function 行を描画(containerId, list, 種別) {
@@ -264,7 +311,18 @@
       ['f-code-contact', function (v) { state.固有記号応答義務 = v; }],
       ['f-area', function (v) { state.表示可能面積 = parseFloat(v) || 0; }],
       ['f-font', function (v) { state.文字サイズ = parseFloat(v) || 0; }],
-      ['f-note', function (v) { state.注意喚起 = v; }]
+      ['f-note', function (v) { state.注意喚起 = v; }],
+      ['f-nutri-omit-reason', function (v) { state.栄養成分.省略理由 = v; }],
+      ['f-nutri-unit', function (v) { state.栄養成分.食品単位 = v; }],
+      ['f-nutri-serving', function (v) { state.栄養成分.一食分の量 = v; }],
+      ['f-nutri-energy', function (v) { state.栄養成分.熱量 = v; }],
+      ['f-nutri-protein', function (v) { state.栄養成分.たんぱく質 = v; }],
+      ['f-nutri-fat', function (v) { state.栄養成分.脂質 = v; }],
+      ['f-nutri-carb', function (v) { state.栄養成分.炭水化物 = v; }],
+      ['f-nutri-salt', function (v) { state.栄養成分.食塩相当量 = v; }],
+      ['f-nutri-na', function (v) { state.栄養成分.ナトリウム = v; }],
+      ['f-nutri-kind', function (v) { state.栄養成分.値の性格 = v; }],
+      ['f-nutri-estimate', function (v) { state.栄養成分.推定値文言 = v; }]
     ];
     単純.forEach(function (p) {
       var el = $(p[0]);
@@ -275,6 +333,31 @@
     $('f-import').addEventListener('change', function () {
       state.輸入品 = $('f-import').checked;
       保存(); 表示切替(); ラベル更新();
+    });
+
+    [
+      ['f-nutri-omit', function (c) { state.栄養成分.省略 = c; }],
+      ['f-nutri-na-show', function (c) { state.栄養成分.ナトリウム併記 = c; }],
+      ['f-nutri-na-free', function (c) { state.栄養成分.ナトリウム塩無添加 = c; }]
+    ].forEach(function (p) {
+      $(p[0]).addEventListener('change', function () {
+        p[1]($(p[0]).checked);
+        保存(); 表示切替(); ラベル更新();
+      });
+    });
+
+    /* ナトリウム(mg) → 食塩相当量(g) の換算補助 */
+    $('btn-na-convert').addEventListener('click', function () {
+      var mg = $('f-nutri-na-input').value;
+      var g = LabelEngine.食塩相当量に換算(mg);
+      if (g === null) {
+        トースト('ナトリウムの値を数値で入力してください');
+        return;
+      }
+      state.栄養成分.食塩相当量 = String(g);
+      $('f-nutri-salt').value = String(g);
+      保存(); ラベル更新();
+      トースト('食塩相当量 ' + g + 'g を入れました（' + mg + 'mg × 2.54 ÷ 1000）');
     });
 
     document.querySelectorAll('input[name="allergen-mode"]').forEach(function (el) {
