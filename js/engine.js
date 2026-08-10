@@ -80,6 +80,7 @@
         case '含む': ok = String(v || '').indexOf(String(c['値'])) >= 0; break;
         case '数値以下': ok = parseFloat(v) <= parseFloat(c['値']); break;
         case '数値より大きい': ok = parseFloat(v) > parseFloat(c['値']); break;
+        case '記載場所表記': ok = 記載場所の表記か(String(v || '')); break;
         default: ok = true;
       }
       if (!ok) return false;
@@ -281,10 +282,23 @@
     return out.length ? out : [pass(rule)];
   };
 
+  /* 枠内に「日付の記載場所」を書き、日付そのものは枠外に印字するパターン
+     （例：「この面の右側に記載」「枠外上部に記載」「箱の底面に記載」）。
+     枠内に記載箇所を明示すれば適法な表示方法なので、書式チェックの対象外とする。 */
+  var 場所語 = '面|上部|下部|上|下|左|右|側|端|裏|表|底|ふた|蓋|キャップ|口|袋|箱|缶|パック|ラベル|欄外|枠外|別途|この|ここ|別記|他';
+  var 記載語 = '記載|表示|記入|印字|表記';
+  var 記載場所パターン = new RegExp('(' + 場所語 + ')[^。\\n]{0,12}(' + 記載語 + ')');
+
+  function 記載場所の表記か(v) {
+    return 記載場所パターン.test(v);
+  }
+
   CHECKS['期限日付書式'] = function (rule, input) {
     var 期限 = input.期限 || {};
     var v = String(期限.日付 || '').trim();
     if (!v) return [];
+    /* 枠外表示（記載場所の明示）は書式チェックを行わない */
+    if (記載場所の表記か(v)) return [pass(rule, { 該当: v })];
     var 要求 = rule.機械判定['要求'];
     var 三か月超 = 期限.期間区分 === '3か月超' && 期限.種別 === '賞味期限';
 

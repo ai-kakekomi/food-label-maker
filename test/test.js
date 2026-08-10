@@ -223,6 +223,36 @@ ok(idで(検証(日付NG), 'error').indexOf('date-format-within-3months') >= 0, 
 var 日付OK = 素材({ 期限: { 種別: '消費期限', 日付: '2026.08.10', 期間区分: '3か月以内' } });
 ok(idで(検証(日付OK), 'error').indexOf('date-format-within-3months') < 0, '3か月以内で年月日は通る');
 
+/* 枠外表示（実在するパターン） */
+function id全部(results) { return results.map(function (r) { return r.rule.id; }); }
+
+['この面の右側に記載', '枠外上部に記載', '箱の底面に記載', 'キャップに記載', 'ふたに記載しています']
+  .forEach(function (v) {
+    var 枠外 = 素材({ 期限: { 種別: '賞味期限', 日付: v, 期間区分: '3か月以内' } });
+    var r = 検証(枠外);
+    ok(idで(r, 'error').indexOf('date-format-within-3months') < 0,
+      '期限の枠外表示「' + v + '」を書式エラーにしない');
+    ok(idで(r, 'error').indexOf('date-required') < 0, '「' + v + '」でも期限の未記入にはしない');
+    ok(id全部(r).indexOf('date-location-outside-frame') >= 0,
+      '「' + v + '」で記載場所の確認項目を出す');
+  });
+
+/* 日付そのものを書いたときは、記載場所の確認項目は出さない */
+ok(id全部(検証(素材({ 期限: { 種別: '賞味期限', 日付: '2027.03.31', 期間区分: '3か月以内' } })))
+  .indexOf('date-location-outside-frame') < 0, '日付を書いたときは枠外表示の確認項目を出さない');
+
+/* 販売者を枠内に書く場合は、製造所の表示（枠外可）を確認させる */
+var 販売者 = 素材({ 事業者: { 区分: '販売者', 名称: '株式会社かけこみ製菓', 住所: '愛知県名古屋市中区栄1-1-1' } });
+ok(id全部(検証(販売者)).indexOf('manufacturer-outside-frame') >= 0,
+  '販売者のときは製造所の表示の確認項目を出す');
+var 製造者 = 素材({ 事業者: { 区分: '製造者', 名称: '株式会社かけこみ製菓', 住所: '愛知県名古屋市中区栄1-1-1' } });
+ok(id全部(検証(製造者)).indexOf('manufacturer-outside-frame') < 0,
+  '製造者のときは製造所の表示の確認項目を出さない');
+
+/* コンタミネーションの注意喚起（枠外表示が通例）は間違い扱いにしない */
+var コンタミ = 素材({ 注意喚起: '本品製造工場では、そば・落花生を含む製品を生産しています。' });
+ok(idで(検証(コンタミ), 'error').length === 0, 'コンタミネーションの注意喚起を error にしない');
+
 /* 内容量の単位 */
 ok(idで(検証(素材({ 内容量: '100' })), 'error').indexOf('quantity-unit') >= 0, '内容量に単位がないと error になる');
 ok(idで(検証(素材({ 内容量: '100g' })), 'error').indexOf('quantity-unit') < 0, '内容量「100g」は通る');

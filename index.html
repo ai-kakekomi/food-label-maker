@@ -156,6 +156,10 @@
         <label class="field">
           <span class="field-label">期限の日付 <em class="req">必須</em></span>
           <input type="text" id="f-date" placeholder="例：2027.03.31／2027.03／令和9年3月31日">
+          <span class="help">
+            日付を枠外に印字する場合は、この欄に記載場所を書きます（例：<code>この面の右側に記載</code>）。
+            そのときは日付の書式チェックは行いません。
+          </span>
         </label>
 
         <label class="field">
@@ -216,7 +220,11 @@
         </div>
         <label class="field">
           <span class="field-label">枠外の注意喚起など（任意）</span>
-          <textarea id="f-note" rows="2" placeholder="例：本品製造工場では、そば・落花生を含む製品を生産しています。"></textarea>
+          <textarea id="f-note" rows="3" placeholder="例：本品製造工場では、そば・落花生を含む製品を生産しています。"></textarea>
+          <span class="help">
+            枠の外に書く内容です。コンタミネーションの注意喚起のほか、
+            枠内を「販売者」にした場合の <code>製造所　△△食品株式会社　◇◇県…</code> もここに書けます。
+          </span>
         </label>
       </fieldset>
 

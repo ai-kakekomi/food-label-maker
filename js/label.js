@@ -73,7 +73,8 @@
     });
     html += '</tbody></table>';
     if ((input.注意喚起 || '').trim()) {
-      html += '<p class="label-note">' + escapeHtml(input.注意喚起).replace(/\n/g, '<br>') + '</p>';
+      html += '<p class="label-note"><strong>【枠外表示】</strong><br>' +
+        escapeHtml(input.注意喚起).replace(/\n/g, '<br>') + '</p>';
     }
     return html;
   }
@@ -89,6 +90,7 @@
     });
     if ((input.注意喚起 || '').trim()) {
       lines.push('');
+      lines.push('【枠外表示】');
       lines.push('※' + input.注意喚起);
     }
     return lines.join('\n');
