@@ -7,6 +7,7 @@
     "base/03_添加物.yaml",
     "base/04_アレルゲン.yaml",
     "base/05_内容量・期限・保存.yaml",
-    "base/06_事業者・様式.yaml"
+    "base/06_事業者・様式.yaml",
+    "base/07_栄養成分.yaml"
   ]
 }
