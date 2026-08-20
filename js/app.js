@@ -19,7 +19,7 @@
       添加物区分方法: '',
       アレルゲン表示方式: '個別表示',
       アレルゲン一括文: '',
-      アレルゲン対象範囲: '28品目',
+      アレルゲン対象範囲: '29品目',
       原料原産地名: '',
       原産国名: '',
       輸入品: false,
@@ -96,6 +96,9 @@
         state.事業者 = Object.assign({ 区分: '製造者', 名称: '', 住所: '' }, o.事業者 || {});
         state.栄養成分 = Object.assign(栄養成分の初期値(), o.栄養成分 || {});
         state.確認済み = o.確認済み || {};
+        // 2026年4月改正前の保存データを読み替える（28→29品目、8→9品目）
+        if (state.アレルゲン対象範囲 === '28品目') state.アレルゲン対象範囲 = '29品目';
+        if (state.アレルゲン対象範囲 === '8品目') state.アレルゲン対象範囲 = '9品目';
       }
     } catch (e) { state = 初期値(); }
   }
@@ -109,7 +112,7 @@
       el.checked = el.value === state.アレルゲン表示方式;
     });
     $('f-ikkatsu').value = state.アレルゲン一括文 || '';
-    $('f-allergen-scope').value = state.アレルゲン対象範囲 || '28品目';
+    $('f-allergen-scope').value = state.アレルゲン対象範囲 || '29品目';
     $('f-import').checked = !!state.輸入品;
     $('f-origin').value = state.原料原産地名 || '';
     $('f-country').value = state.原産国名 || '';
@@ -229,7 +232,7 @@
     ['特定原材料', '特定原材料に準ずるもの'].forEach(function (区分) {
       var h = document.createElement('p');
       h.className = 'chips-head';
-      h.textContent = 区分 === '特定原材料' ? '特定原材料（表示義務8品目）' : '特定原材料に準ずるもの（表示推奨20品目）';
+      h.textContent = 区分 === '特定原材料' ? '特定原材料（表示義務9品目）' : '特定原材料に準ずるもの（表示推奨20品目）';
       chips.appendChild(h);
       var wrap = document.createElement('div');
       wrap.className = 'chips-body';

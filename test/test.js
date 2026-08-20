@@ -31,13 +31,13 @@ var index = JSON.parse(fs.readFileSync(path.join(ROOT, 'rules', 'index.json'), '
 
 var 辞書doc = jsyaml.load(fs.readFileSync(path.join(ROOT, 'rules', index['辞書']), 'utf8'));
 ok(Array.isArray(辞書doc['特定原材料']), 'アレルゲン辞書：特定原材料がリストである');
-ok(辞書doc['特定原材料'].length === 8, '特定原材料は8品目', 辞書doc['特定原材料'].length + '品目');
+ok(辞書doc['特定原材料'].length === 9, '特定原材料は9品目', 辞書doc['特定原材料'].length + '品目');
 ok(辞書doc['特定原材料に準ずるもの'].length === 20, '特定原材料に準ずるものは20品目',
   辞書doc['特定原材料に準ずるもの'].length + '品目');
 
-var 想定8 = ['えび', 'かに', 'くるみ', '小麦', 'そば', '卵', '乳', '落花生'];
-ok(JSON.stringify(辞書doc['特定原材料'].map(function (x) { return x['品目']; })) === JSON.stringify(想定8),
-  '特定原材料8品目の内容が正しい');
+var 想定9 = ['えび', 'カシューナッツ', 'かに', 'くるみ', '小麦', 'そば', '卵', '乳', '落花生'];
+ok(JSON.stringify(辞書doc['特定原材料'].map(function (x) { return x['品目']; })) === JSON.stringify(想定9),
+  '特定原材料9品目の内容が正しい');
 
 var 全ルール = [];
 var 既出id = {};

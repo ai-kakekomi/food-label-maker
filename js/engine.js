@@ -263,7 +263,7 @@
     var 未記載 = 含有アレルゲン一覧(input).filter(function (a) {
       var d = ctx.辞書.検索(a);
       if (!d) return false;
-      if (d.区分 === '特定原材料に準ずるもの' && input.アレルゲン対象範囲 === '8品目') return false;
+      if (d.区分 === '特定原材料に準ずるもの' && (input.アレルゲン対象範囲 === '9品目' || input.アレルゲン対象範囲 === '8品目')) return false;
       return 一括.indexOf(d.表示形式) < 0 && 一括.indexOf(a) < 0;
     });
     if (!未記載.length) return [pass(rule)];

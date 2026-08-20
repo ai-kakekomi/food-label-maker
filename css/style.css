@@ -430,6 +430,13 @@ input:focus, select:focus, textarea:focus {
 }
 .manual-table thead th { background: #eef2f5; }
 .manual-table td .pill { white-space: nowrap; }
+/* スマホでは表を横スクロールさせ、ページ全体がはみ出さないようにする */
+@media (max-width: 700px) {
+  .manual-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .manual-table th, .manual-table td { min-width: 9rem; }
+  .rules-toolbar .field.inline { min-width: 0; width: 100%; }
+  .rules-toolbar input, .rules-toolbar select { width: 100%; max-width: 100%; }
+}
 
 /* コード・フォルダ構成 */
 .manual pre.code, .manual pre.tree {
